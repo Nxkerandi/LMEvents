@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in — Elijah's Ark Mission</title>
+<title>Sign in — Living Manna</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after{ box-sizing: border-box; }
   body{
@@ -16,28 +16,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background: #f9f7f3;
-    color: #414141;
+    color: #1c1c1c;
     padding: 2rem 1.25rem;
   }
   .wrap{ width: 100%; max-width: 380px; }
-  .logo{
-    display: block;
-    height: 48px;
-    width: auto;
-    margin: 0 auto 2rem;
+  .brand{
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    color: #0b2242;
+    margin: 0 0 2rem;
   }
   .card{
     background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(10,35,66,0.1);
+    border: 0.5px solid #d8a52f;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(11,34,66,0.1);
     padding: 2rem 1.75rem;
   }
   .card h1{
     font-size: 1.1rem;
     font-weight: 600;
-    color: #0a2342;
+    color: #0b2242;
     margin: 0 0 1.5rem;
     text-align: center;
   }
@@ -47,23 +50,23 @@
     display: block;
     font-size: 0.88rem;
     font-weight: 500;
-    color: #0a2342;
+    color: #0b2242;
     margin-bottom: 0.4rem;
   }
   .field input{
     width: 100%;
     font-family: inherit;
     font-size: 1rem;
-    color: #414141;
-    background: #f9f7f3;
-    border: 0.75px solid #000000;
-    border-radius: 5px;
+    color: #1c1c1c;
+    background: #fbf5ed;
+    border: 0.5px solid #d8a52f;
+    border-radius: 6px;
     padding: 0.7rem 0.95rem;
   }
   .field input:focus-visible{
     outline: none;
-    border-color: #b88b4a;
-    box-shadow: 0 0 0 3px rgba(184,139,74,0.22);
+    border-color: #c98a2b;
+    box-shadow: 0 0 0 3px rgba(201,138,43,0.22);
   }
   .errornote{
     background: rgba(161,60,60,0.08);
@@ -77,10 +80,10 @@
   button.submit{
     width: 100%;
     font-family: inherit;
-    background: #0a2342;
-    color: #dce2f0;
+    background: #0b2242;
+    color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0.85rem 1.5rem;
     font-size: 0.95rem;
     font-weight: 500;
@@ -92,7 +95,7 @@
   .footnote{
     text-align: center;
     font-size: 0.8rem;
-    color: #808080;
+    color: #6b6459;
     margin: 1.5rem 0 0;
   }
 </style>
@@ -100,7 +103,7 @@
 <body>
 
 <div class="wrap">
-  <img class="logo" src="{% static 'images/figma/footer-logo.png' %}" alt="Elijah's Ark Mission">
+  <p class="brand">Living Manna</p>
 
   <div class="card">
     <h1>Sign in to continue</h1>
@@ -129,7 +132,7 @@
     </form>
   </div>
 
-  <p class="footnote">Elijah's Ark Mission &mdash; Internal Use Only</p>
+  <p class="footnote">Living Manna &mdash; Internal Use Only</p>
 </div>
 
 </body>

@@ -30,6 +30,18 @@ from .models import (
 REGISTRATION_RATE_LIMIT = 5
 REGISTRATION_RATE_WINDOW = timedelta(minutes=10)
 
+# Read-only preview table on the registration page, kept in sync by hand with
+# the "Which sessions will you attend?" EventQuestion's options rather than
+# derived from them — this app currently only serves one event, so the
+# duplication is cheap; if a second event with a different schedule is added,
+# revisit this rather than editing it in place.
+SCHEDULE_ROWS = [
+    {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+    {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+    {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+    {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
+]
+
 
 def _client_ip(request):
     # Railway (and most PaaS hosts) terminate TLS at a proxy and forward the
@@ -290,6 +302,7 @@ def registration_view(request, slug):
             return render(request, "events/register.html", {
                 "event": event,
                 "sections": _group_sections(_top_questions(event)),
+                "schedule_rows": SCHEDULE_ROWS,
                 "rate_limited": True,
             }, status=429)
 
@@ -300,13 +313,17 @@ def registration_view(request, slug):
 
         top_questions = _top_questions(event)
         missing = []
-        full_name = request.POST.get("full_name", "").strip()
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        full_name = f"{first_name} {last_name}".strip()
         email = request.POST.get("email", "").strip()
         phone = request.POST.get("phone", "").strip()
         attendee_count_raw = request.POST.get("attendee_count", "").strip()
 
-        if not full_name:
-            missing.append("Full name")
+        if not first_name:
+            missing.append("First name")
+        if not last_name:
+            missing.append("Last name")
         if not email:
             missing.append("Email address")
         else:
@@ -359,6 +376,7 @@ def registration_view(request, slug):
         return render(request, "events/register.html", {
             "event": event,
             "sections": _group_sections(top_questions),
+            "schedule_rows": SCHEDULE_ROWS,
             "missing": missing,
         }, status=400)
 
@@ -368,6 +386,7 @@ def registration_view(request, slug):
     return render(request, "events/register.html", {
         "event": event,
         "sections": _group_sections(_top_questions(event)),
+        "schedule_rows": SCHEDULE_ROWS,
     })
 
 

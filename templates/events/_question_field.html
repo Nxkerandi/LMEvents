@@ -24,9 +24,9 @@
 <div class="field">
   <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
-  <div class="choices">
-    <label class="choice"><input type="radio" name="q_{{ question.id }}" value="Yes" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required %} required{% endif %}><span class="box"></span><span class="label">Yes</span></label>
-    <label class="choice"><input type="radio" name="q_{{ question.id }}" value="No" data-controls-reveal data-question-id="{{ question.id }}"><span class="box"></span><span class="label">No</span></label>
+  <div class="choices boolean-choices">
+    <label class="choice toggle-pill"><input type="radio" name="q_{{ question.id }}" value="Yes" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required %} required{% endif %}><span class="box"></span><span class="label">Yes</span></label>
+    <label class="choice toggle-pill"><input type="radio" name="q_{{ question.id }}" value="No" data-controls-reveal data-question-id="{{ question.id }}"><span class="box"></span><span class="label">No</span></label>
   </div>
 </div>
 
@@ -40,7 +40,7 @@
       <input type="radio" name="q_{{ question.id }}" value="{{ option.value }}" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required and forloop.first %} required{% endif %}>
       <span class="box"></span>
       {% if option.secondary_label %}
-      <span class="label">{{ option.label }} | <span class="tag">{{ option.secondary_label }}</span></span>
+      <span class="label">{{ option.label }}<span class="tag">{{ option.secondary_label }}</span></span>
       {% else %}
       <span class="label">{{ option.label }}</span>
       {% endif %}
@@ -59,7 +59,7 @@
       <input type="checkbox" name="q_{{ question.id }}" value="{{ option.value }}">
       <span class="box"></span>
       {% if option.secondary_label %}
-      <span class="label">{{ option.label }} | <span class="tag">{{ option.secondary_label }}</span></span>
+      <span class="label">{{ option.label }}<span class="tag">{{ option.secondary_label }}</span></span>
       {% else %}
       <span class="label">{{ option.label }}</span>
       {% endif %}

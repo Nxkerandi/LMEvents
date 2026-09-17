@@ -24,6 +24,21 @@ class Event(models.Model):
     )
     location = models.CharField(max_length=200, blank=True)
     contact_email = models.EmailField(blank=True)
+    quote_text = models.TextField(
+        blank=True, help_text="Inspirational quote shown in the About section, e.g. an Ellen G. White quote.",
+    )
+    quote_attribution = models.CharField(
+        max_length=200, blank=True,
+        help_text='Attribution for the quote above, e.g. "ELLEN G. WHITE, THE ADVENTIST HOME, p. 15.1".',
+    )
+    speakers = models.TextField(
+        blank=True,
+        help_text='One speaker per line, shown as pills in the About section, e.g. "Devaney & Fazlyn Haupt".',
+    )
+    admission_text = models.CharField(
+        max_length=100, blank=True, default="Free Admission",
+        help_text='Shown as a pill in the About section, e.g. "Free Admission" or "$10 at the door".',
+    )
     hero_background_image = models.ImageField(
         upload_to="events/hero_backgrounds/", blank=True, null=True,
         help_text="Full-bleed photo behind the hero title. Falls back to a plain navy background if blank.",
@@ -50,6 +65,10 @@ class Event(models.Model):
         if start.month == end.month and start.year == end.year:
             return f"{start.strftime('%B')} {start.day}–{end.day}, {end.year}"
         return f"{start.strftime('%B')} {start.day}, {start.year} – {end.strftime('%B')} {end.day}, {end.year}"
+
+    @property
+    def speaker_list(self):
+        return [s.strip() for s in self.speakers.splitlines() if s.strip()]
 
     @property
     def hero_date_display(self):

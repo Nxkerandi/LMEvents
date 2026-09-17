@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "source": "https://www.figma.com/design/KT1MB0kyS04Sc5HKBxhGaz/Living-Manna-Registration-Page?node-id=4-7&m=dev",
+    "fileKey": "KT1MB0kyS04Sc5HKBxhGaz",
+    "nodeId": "4:7",
+    "note": "get_variable_defs returned {} for the root node (4:7) — no Figma Variables (design tokens) are bound anywhere in this frame or its children. The values below were extracted manually from the get_design_context reference code and get_metadata layout data in code.md so they're available in structured form. This file is a real-content source of truth (not a placeholder design), so content strings are included alongside styling here."
+  },
+  "colors": {
+    "navy": "#0b2242",
+    "gold": "#c98a2b",
+    "goldBorder": "#d8a52f",
+    "text": "#1c1c1c",
+    "background": "#f9f7f3",
+    "inputBackground": "#fbf5ed",
+    "white": "#ffffff",
+    "black": "#000000",
+    "sessionOptionBorder": "#666666",
+    "infoPillBackground": "rgba(220,226,240,0.1)",
+    "noticeBarBackground": "rgba(255,255,255,0.1)"
+  },
+  "typography": {
+    "fontFamily": "Montserrat",
+    "note": "Single font family for the whole page — no separate display/heading typeface (unlike the EAEvents design's Poppins + 'Eleven Eleven' combo). Headings are differentiated by weight/size/color only.",
+    "weightsUsed": ["Light", "Light Italic", "Regular", "Italic", "Medium", "SemiBold", "Bold"],
+    "styles": {
+      "cardHeadingAboutEvent": { "weight": "Bold", "size": 18, "lineHeight": 32, "letterSpacing": 0.36, "color": "#0b2242", "note": "the one section heading that is navy instead of gold" },
+      "cardHeadingOther": { "weight": "Bold", "size": 18, "lineHeight": 32, "letterSpacing": 0.36, "color": "#c98a2b", "note": "all other section headings (SCHEDULE, YOUR INFORMATION, WHICH SESSIONS WILL YOU ATTEND?, CHILDREN & YOUTH, SABBATH MEAL, ADDITIONAL INFORMATION)" },
+      "bodyParagraph": { "weight": "Regular", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#1c1c1c" },
+      "italicQuote": { "weight": "Italic", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#1c1c1c" },
+      "quoteAttribution": { "weight": "SemiBold", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" },
+      "speakerPillText": { "weight": "Medium", "size": 16, "lineHeight": "normal", "letterSpacing": null, "color": "#0b2242" },
+      "infoPillText": { "weight": "SemiBold", "size": 16, "lineHeight": "normal", "letterSpacing": 0.48, "color": "#0b2242" },
+      "scheduleTableHeader": { "weight": "Medium", "size": 18, "lineHeight": 32, "letterSpacing": 0.36, "color": "#1c1c1c" },
+      "scheduleDatePill": { "weight": "SemiBold", "size": 16, "lineHeight": "normal", "letterSpacing": 0.48, "color": "#ffffff" },
+      "scheduleCellText": { "weight": "Regular", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#1c1c1c" },
+      "noticeBarText": { "weight": "Regular/SemiBold mixed inline, italic", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" },
+      "fieldLabel": { "weight": "Medium", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" },
+      "fieldLabelAsterisk": { "weight": "SemiBold", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#c98a2b" },
+      "fieldHelperItalic": { "weight": "Italic", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" },
+      "sessionOptionDateLine": { "weight": "Medium", "size": 16, "letterSpacing": 0.32, "color": "#0b2242" },
+      "sessionOptionDescriptionLine": { "weight": "Regular", "size": 16, "letterSpacing": 0.32, "color": "#1c1c1c" },
+      "togglePillText": { "weight": "Regular", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" },
+      "textareaPlaceholder": { "weight": "Light Italic", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#000000", "note": "the only text using pure black instead of #1c1c1c/#0b2242" },
+      "submitButtonText": { "weight": "Light", "size": 16, "lineHeight": "normal", "letterSpacing": null, "color": "#ffffff" },
+      "footerPlainText": { "weight": "Regular", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#1c1c1c" },
+      "footerEmphasisText": { "weight": "Medium", "size": 16, "lineHeight": 32, "letterSpacing": 0.32, "color": "#0b2242" }
+    }
+  },
+  "spacing": {
+    "pageWidth": 1440,
+    "pageHeight": 5144,
+    "heroHeight": 700,
+    "contentColumnX": 170,
+    "contentColumnY": 780,
+    "contentColumnWidth": 1100,
+    "gapHeroToContent": 80,
+    "gapBetweenCards": 40,
+    "gapBetweenSubmitAndFooterBlocks": 35,
+    "cardCornerRadiusDefault": 20,
+    "cardCornerRadiusAdditionalInfo": 10,
+    "noticeBarCornerRadius": 10,
+    "textInputHeight": 65,
+    "textInputRadius": 6,
+    "textareaHeight": 93,
+    "textareaRadius": 10,
+    "sessionOptionWidth": 706,
+    "sessionOptionRadius": 10,
+    "togglePillWidth": 350,
+    "togglePillGap": 120,
+    "togglePillRadius": 10,
+    "submitButtonWidth": 600,
+    "submitButtonRadius": 10
+  },
+  "content": {
+    "eventName": "Preparing The Home For Home",
+    "eventDates": "October 14–17, 2026",
+    "eventVenue": "Harbert Hills Academy",
+    "eventAddress": "45 Rural Lane, Savannah, TN 38372",
+    "registrationDeadline": "Sunday, September 27, 2026",
+    "admission": "Free Admission",
+    "speakers": ["Devaney & Fazlyn Haupt", "Elvin & Marcia Bridges"],
+    "aboutBody": "Join us for four days of meetings designed to prepare our hearts and homes for what lies ahead. Together we'll consider what it means to build a home that honors God now, in view of the eternal home He is preparing for us.",
+    "quote": "\"The well-being of society, the success of the church, and the prosperity of the nation truly depend upon home influences.\"",
+    "quoteAttribution": "ELLEN G. WHITE, THE ADVENTIST HOME, p. 15.1",
+    "schedule": [
+      { "date": "Wed, Oct 14", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Thu, Oct 15", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Fri, Oct 16", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Sat, Oct 17", "session": "Preparing The Home For Home – All-Day Program", "time": "9.00 AM - 6.00 PM" }
+    ],
+    "registrationNotice": "Please register by Sunday, September 27, 2026. This event is free to attend.",
+    "formFields": {
+      "firstName": "First Name *",
+      "lastName": "Last Name *",
+      "phoneNumber": "Phone Number *",
+      "emailAddress": "Email Address *",
+      "totalAttending": "Total People Attending, Including Yourself *",
+      "totalAttendingHelper": "Count everyone in your group — yourself, your spouse, and any children or youth."
+    },
+    "sessionsQuestion": {
+      "label": "WHICH SESSIONS WILL YOU ATTEND? *",
+      "options": [
+        { "date": "Wednesday, October 14", "description": "Evening Session : 6.00 PM - 9.00 PM" },
+        { "date": "Thursday, October 15", "description": "Evening Session : 6.00 PM - 9.00 PM" },
+        { "date": "Friday, October 1", "description": "Evening Session : 6.00 PM - 9.00 PM", "warning": "Likely typo in Figma source — schedule table says 'Fri, Oct 16'. Transcribed verbatim; confirm with content owner before seeding." },
+        { "date": "Saturday, October 17", "description": "All-Day Program : 9.00 AM - 6.00 PM" }
+      ]
+    },
+    "childrenYouth": {
+      "heading": "CHILDREN & YOUTH",
+      "body": "Cradle Roll and Youth Sabbath School classes, plus afternoon classes, are available. Outside of class time, we respectfully ask that parents keep their children with them at all times.",
+      "question": "Will children or youth be attending with you? *",
+      "options": ["Yes", "No"]
+    },
+    "sabbathMeal": {
+      "heading": "SABBATH MEAL",
+      "body": "Meals will be provided for all visitors on Sabbath, October 17, only.",
+      "question": "Will you be joining us for the Sabbath meal? *",
+      "options": ["Yes", "No"]
+    },
+    "additionalInfo": {
+      "heading": "ADDITIONAL INFORMATION",
+      "question": "What city do you currently live in? (Optional)",
+      "placeholder": "Short answer"
+    },
+    "submitButton": "Submit",
+    "footerContact": {
+      "line1Prefix": "Questions about registration?",
+      "line1Body": "Contact Marcia Bridges · livingmanna@yahoo.com",
+      "line1Email": "livingmanna@yahoo.com",
+      "line2": "Harbert Hills Academy · 45 Rural Lane, Savannah, TN 38372"
+    },
+    "heroImageBakedText": {
+      "warning": "All of this is pixels inside hero-bg.png, not live text. The Pasadena SDA Church listing is a DIFFERENT event sharing this marketing graphic — do not seed it as part of this event.",
+      "title": "PREPARING THE HOME FOR HOME",
+      "leftSpeaker": "Brother DEVANEY HAUPT — Messengers of Present Truth Ministries",
+      "rightSpeaker": "Elder ELVIN BRIDGES — Living Manna Ministries",
+      "centerEmblem": "LIVING MANNA MINISTRIES — Messengers of Present Truth Ministries",
+      "thisEventBadge": "Harbert Hills Academy / October 14–17, 2026 / Savannah, Tennessee",
+      "otherEventBadgeOutOfScope": "Pasadena SDA Church / October 21–24, 2026 / Pasadena, California",
+      "bottomBar": "livingmannaministries.org | livingmanna@yahoo.com"
+    }
+  },
+  "assets": {
+    "heroBackground": { "file": "hero-bg.png", "nodeId": "4:8", "dimensions": "2880x1400 (2x of 1440x700)", "note": "flattened 2x export; underlying source photo is only 1964x801, see resolution-risk note in code.md" },
+    "heroBackgroundRawSourceHighRes": { "file": "hero-bg-source-raw-highres.jpg", "dimensions": "1964x801" },
+    "heroBackgroundRawSourceLowResDuplicate": { "file": "hero-bg-source-raw-lowres-duplicate.jpg", "dimensions": "491x201", "note": "same graphic, a smaller duplicate fill found in the same node subtree" },
+    "iconCalendar": { "file": "icon-calendar.svg", "nodeId": "4:69", "usage": "next to 'October 14–17, 2026' info pill" },
+    "iconLocation": { "file": "icon-location.svg", "nodeId": "4:90", "usage": "next to address info pill" },
+    "iconAdmission": { "file": "icon-admission.svg", "nodeId": "4:120", "usage": "next to 'Free Admission' info pill" },
+    "iconNotice": { "file": "icon-notice.svg", "nodeId": "4:182", "usage": "next to registration-deadline notice bar" }
+  }
+}
