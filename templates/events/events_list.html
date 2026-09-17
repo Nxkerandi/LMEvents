@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Events</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <p class="topbar-kicker">Staff</p>
+      <h1>Events</h1>
+      <p class="topbar-dates">{{ events|length }} event{{ events|length|pluralize }}</p>
+    </div>
+    <a class="export" href="/admin/events/event/add/">+ New Event</a>
+  </div>
+</div>
+
+<main>
+  <div class="stats" id="stats">
+    <div class="stat-card"><div class="value">{{ events|length }}</div><div class="stat-label">Total events</div></div>
+    <div class="stat-card"><div class="value">{{ published_count }}</div><div class="stat-label">Published</div></div>
+    <div class="stat-card"><div class="value">{{ draft_count }}</div><div class="stat-label">Draft</div></div>
+    <div class="stat-card"><div class="value">{{ total_registrations }}</div><div class="stat-label">Total registrations</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <div class="cell name">Event</div>
+      <div class="cell">Dates</div>
+      <div class="cell">Status</div>
+      <div class="cell">Registrations</div>
+      <div class="cell">Actions</div>
+    </div>
+    {% if events %}
+    <div id="table-body">
+      {% for event in events %}
+      <div class="row" style="cursor: default;">
+        <div class="cell name" data-label="Event">
+          <span class="cell-value">{{ event.title }}<span class="sub-email">{{ event.kicker }}</span></span>
+        </div>
+        <div class="cell" data-label="Dates"><span class="cell-value">{{ event.date_range_display }}</span></div>
+        <div class="cell" data-label="Status">
+          <span class="cell-value">
+            {% if event.is_published %}<span class="badge yes">Published</span>{% else %}<span class="badge no">Draft</span>{% endif %}
+          </span>
+        </div>
+        <div class="cell" data-label="Registrations"><span class="cell-value">{{ event.registration_count }}</span></div>
+        <div class="cell" data-label="Actions">
+          <span class="cell-value" style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:center;">
+            <a href="{% url 'events:dashboard' event.slug %}">Dashboard</a>
+            <a href="{% url 'events:register' event.slug %}" target="_blank">Registration</a>
+            <a href="/admin/events/event/{{ event.pk }}/change/">Edit</a>
+            <form method="post" action="{% url 'events:duplicate_event' event.slug %}" style="display:inline;" onsubmit="return confirm('Duplicate &quot;{{ event.title|escapejs }}&quot; and all its questions as a new draft event?');">
+              {% csrf_token %}
+              <button type="submit" class="link-btn">Duplicate</button>
+            </form>
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">No events yet. Create one to get started.</div>
+    {% endif %}
+  </div>
+</main>
+
+</body>
+</html>

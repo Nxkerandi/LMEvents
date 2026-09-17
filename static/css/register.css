@@ -1,0 +1,612 @@
+@font-face{
+  font-family: 'Eleven Eleven';
+  src: url('../fonts/ElevenEleven-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'Eleven Eleven';
+  src: url('../fonts/ElevenEleven-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'Eleven Eleven';
+  src: url('../fonts/ElevenEleven-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root{
+  --navy: #0a2342;
+  --gold: #b88b4a;
+  --bg: #f9f7f3;
+  --surface: #ffffff;
+  --text: #414141;
+  --muted: #808080;
+  --input-border: #000000;
+  --input-bg: #f9f7f3;
+  --notice-bg: #dce2f0;
+  --btn-bg: #0a2342;
+  --btn-text: #dce2f0;
+  --choice-bg: #f9f7f3;
+  --choice-checked-bg: #dce2f0;
+  --check-ring: #414141;
+  --check-active: #0a2342;
+  --error: #a13c3c;
+  --hero-overlay: rgba(3,21,44,0.65);
+  --card-shadow: 0 1px 2px rgba(10,35,66,0.06);
+
+  --font-display: 'Eleven Eleven', 'Poppins', sans-serif;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+
+body{
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a{ color: var(--navy); }
+
+/* ---------- Hero ---------- */
+
+.hero{
+  position: relative;
+  overflow: hidden;
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  background: var(--navy);
+}
+
+.hero.has-photo{
+  background-size: cover;
+  background-position: center 52%;
+  /* The source photo is portrait (1122x1402) inside a wide banner box, so
+     `cover` always crops to the box's full width (no horizontal crop at any
+     screen size here) and instead reveals a horizontal band out of the tall
+     image — how TALL that band is shrinks as the viewport widens (~60% of
+     the photo's height visible on a narrow phone, down to ~20% on a wide
+     desktop). The family group (the actual subject) sits roughly 48%-82%
+     down the photo; 52% keeps that band centered on their heads/shoulders
+     at every crop depth instead of drifting onto empty sky/mountains (what
+     the old "30%" anchor did on wide screens) or too far down toward their
+     feet.
+     min-height anchors the box to the design's banner ratio (1440x484,
+     ~2.97:1) instead of leaving it purely content/padding-driven, so the
+     crop depth itself doesn't also drift unpredictably with padding. */
+  min-height: clamp(280px, 33.6vw, 484px);
+}
+
+.hero.has-photo::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hero-overlay);
+}
+
+.hero-inner{
+  max-width: 620px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-kicker-logo{
+  height: 44px;
+  width: auto;
+  margin: 0 auto 1.1rem;
+  display: block;
+  opacity: 0.9;
+}
+
+.hero-title-image{
+  max-width: 460px;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 1.25rem;
+  display: block;
+}
+
+.hero-kicker-text{
+  color: var(--gold);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.75rem;
+}
+
+.hero h1{
+  color: #ffffff;
+  font-size: clamp(1.65rem, 5vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 1.1rem;
+}
+
+.hero-dates{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  margin: 0 0 1.4rem;
+}
+
+.hero-dates .dot{
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  display: inline-block;
+  flex: none;
+}
+
+.hero p.mission{
+  color: #ffffff;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.875;
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+.hero p.motto{
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.875;
+  max-width: 46ch;
+  margin: 1.875em auto 0;
+}
+
+/* ---------- Form shell ---------- */
+
+main{
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3.5rem;
+}
+
+.card{
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 2rem 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* ---------- Notice / error banner ---------- */
+
+.notice{
+  background: var(--notice-bg);
+  border-left: 4px solid var(--gold);
+  border-radius: 15px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.notice .notice-title{
+  color: var(--navy);
+  font-weight: 500;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 0.6rem;
+}
+
+.notice .notice-body{
+  color: var(--text);
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 2;
+  margin: 0;
+}
+
+.notice .notice-body .highlight{
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.error-banner{
+  background: rgba(161,60,60,0.08);
+  border-left: 4px solid var(--error);
+  border-radius: 15px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.error-banner .error-title{
+  color: var(--error);
+  font-weight: 500;
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.error-banner ul{
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.section{
+  padding: 1.5rem 0;
+}
+
+.section:first-of-type{ padding-top: 0; }
+
+.section-title{
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 0.8rem;
+}
+
+.section-title .mark{
+  width: 11px;
+  height: 11px;
+  background: var(--gold);
+  flex: none;
+}
+
+.section-title h2{
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin: 0;
+}
+
+/* ---------- Fields ---------- */
+
+.field{ margin-bottom: 1.1rem; }
+.field:last-child{ margin-bottom: 0; }
+
+.field label.q{
+  display: block;
+  font-weight: 400;
+  color: var(--navy);
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.field label.q .req{
+  color: var(--gold);
+  font-weight: 500;
+  margin-left: 0.2rem;
+}
+
+.field .help{
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea{
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 0.75px solid var(--input-border);
+  border-radius: 5px;
+  padding: 0.7rem 1.15rem;
+}
+
+textarea{ min-height: 6rem; resize: vertical; }
+
+input:focus-visible,
+textarea:focus-visible{
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,139,74,0.22);
+}
+
+input::placeholder,
+textarea::placeholder{ color: var(--muted); opacity: 0.9; }
+
+/* ---------- Choice groups (checkbox / radio) ---------- */
+
+.choices{
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.choice{
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.95rem 1.75rem;
+  border-radius: 7px;
+  background: var(--choice-bg);
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.choice:hover{ background: var(--choice-checked-bg); }
+.choice.is-checked{ background: var(--choice-checked-bg); }
+
+.choice input{
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.choice .box{
+  flex: none;
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.choice input[type="radio"] ~ .box{
+  border-radius: 50%;
+  border: 1.25px solid var(--check-ring);
+  background: var(--surface);
+}
+.choice input[type="checkbox"] ~ .box{
+  border-radius: 2px;
+  border: 0.5px solid var(--check-ring);
+  background: var(--surface);
+}
+
+.choice .box::after{ content: ""; opacity: 0; }
+
+.choice input[type="radio"]:checked ~ .box{ border-color: var(--check-active); }
+.choice input[type="radio"]:checked ~ .box::after{
+  opacity: 1;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--check-active);
+}
+
+.choice input[type="checkbox"]:checked ~ .box{
+  background: var(--check-active);
+  border-color: var(--check-active);
+}
+.choice input[type="checkbox"]:checked ~ .box::after{
+  opacity: 1;
+  width: 8px;
+  height: 4px;
+  border-left: 1.5px solid var(--surface);
+  border-bottom: 1.5px solid var(--surface);
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.choice input:focus-visible ~ .box{ box-shadow: 0 0 0 3px rgba(184,139,74,0.3); }
+
+.choice span.label{
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.4;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.choice span.label .tag{
+  font-weight: 500;
+  color: var(--gold);
+}
+
+/* ---------- Repeatable group rows ---------- */
+
+.repeat-row{
+  background: var(--choice-bg);
+  border-radius: 7px;
+  padding: 0.9rem 1rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.repeat-row-main{ display: flex; gap: 0.6rem; align-items: center; }
+
+.repeat-text-input{
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 0.98rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 0.75px solid var(--input-border);
+  border-radius: 5px;
+  padding: 0.65rem 0.9rem;
+}
+.repeat-text-input:focus-visible{
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,139,74,0.22);
+}
+
+.remove-row-btn{
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+  border: 0.75px solid var(--input-border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.remove-row-btn:hover{ border-color: var(--error); color: var(--error); }
+
+.pill-group{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
+.pill{ cursor: pointer; }
+.pill input{ position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pill span{
+  display: inline-block;
+  padding: 0.45rem 0.85rem;
+  border: 0.75px solid var(--input-border);
+  border-radius: 100px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.pill input:checked ~ span{
+  background: var(--check-active);
+  border-color: var(--check-active);
+  color: var(--btn-text);
+  font-weight: 500;
+}
+.pill input:focus-visible ~ span{ box-shadow: 0 0 0 3px rgba(184,139,74,0.3); }
+
+.add-row-btn{
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  background: none;
+  border: 1px dashed var(--gold);
+  color: var(--navy);
+  border-radius: 7px;
+  padding: 0.7rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.add-row-btn:hover{ background: var(--choice-checked-bg); }
+
+/* ---------- Conditional reveal ---------- */
+
+.reveal{
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .25s ease, opacity .2s ease;
+}
+.reveal.open{ grid-template-rows: 1fr; opacity: 1; margin-top: 1.1rem; }
+.reveal > div{ overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce){ .reveal{ transition: none; } }
+
+/* ---------- Errors ---------- */
+
+.group-error{ display: none; color: var(--error); font-size: 0.86rem; margin-top: 0.5rem; }
+.field.has-error .group-error{ display: block; }
+.field.has-error .choice{ outline: 1.5px solid var(--error); }
+.field.has-error input[type="text"],
+.field.has-error input[type="email"],
+.field.has-error input[type="tel"],
+.field.has-error input[type="number"],
+.field.has-error textarea{ border-color: var(--error); }
+
+/* ---------- Submit ---------- */
+
+.submit-divider{
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin: 1.5rem auto 0;
+  opacity: 0.6;
+}
+
+.submit-row{ margin-top: 1.5rem; }
+
+button.submit{
+  width: 100%;
+  font-family: var(--font-display);
+  font-weight: 300;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity .15s ease, transform .1s ease;
+}
+button.submit:hover{ opacity: 0.9; }
+button.submit:active{ transform: translateY(1px); }
+button.submit:focus-visible{ outline: none; box-shadow: 0 0 0 3px rgba(184,139,74,0.4); }
+button.submit:disabled{ opacity: 0.6; cursor: not-allowed; }
+
+.submit-note{ text-align: center; font-size: 0.9rem; font-weight: 300; color: var(--text); margin-top: 1rem; }
+.contact-note{ text-align: center; font-size: 0.9rem; font-weight: 300; color: var(--text); margin-top: 0.5rem; }
+.contact-note a{ color: var(--gold); font-weight: 500; }
+
+/* Event venue/location — deliberately bolder and darker (navy, medium
+   weight) than the two footnote lines above it, so it reads as an address
+   callout rather than another muted footnote. Figma spec: Poppins Medium
+   16px/32px, 0.32px letter-spacing, #0a2342, centered, 30px gap on both
+   sides (the .submit-row/.footer-logo margins already land close to that
+   same rhythm). */
+.venue-note{
+  text-align: center;
+  text-wrap: balance;
+  font-size: 1rem;
+  line-height: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--navy);
+  margin-top: 1.875rem;
+}
+
+.footer-logo{
+  display: block;
+  height: 43px;
+  width: auto;
+  margin: 3rem auto 0;
+}
+
+/* ---------- Success state ---------- */
+
+.success{ text-align: center; padding: 3rem 1.5rem; }
+.success .mark-circle{
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--btn-bg);
+  display: grid; place-items: center; margin: 0 auto 1.4rem;
+}
+.success .mark-circle::after{
+  content: "";
+  width: 18px; height: 10px;
+  border-left: 2.5px solid var(--btn-text);
+  border-bottom: 2.5px solid var(--btn-text);
+  transform: rotate(-45deg) translateY(-2px);
+}
+.success h2{ color: var(--navy); font-size: 1.4rem; margin: 0 0 0.6rem; }
+.success p{ color: var(--text); max-width: 40ch; margin: 0 auto; }
+
+footer.page-footer{
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0 1.5rem 3rem;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (min-width: 640px){
+  .hero{ padding: 4.5rem 2rem; }
+  main{ padding: 3rem 2rem 4.5rem; }
+  .card{ padding: 2.5rem 2.25rem; }
+}
+
+@media (min-width: 1024px){
+  .hero{ padding: 5.5rem 2rem; }
+  main{ max-width: 740px; padding: 3.5rem 2rem 5rem; }
+  .card{ padding: 3rem 3.25rem; }
+}

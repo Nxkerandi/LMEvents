@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Register — {{ event.title }}{% if event.kicker %} | {{ event.kicker }}{% endif %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+
+<header class="hero{% if event.hero_background_image %} has-photo{% endif %}"{% if event.hero_background_image %} style="background-image: url('{{ event.hero_background_image.url }}');"{% endif %}>
+  <div class="hero-inner">
+    {% if event.hero_title_image %}
+      <img class="hero-kicker-logo" src="{% static 'images/figma/hero-kicker-logo.png' %}" alt="{{ event.kicker }}">
+      <img class="hero-title-image" src="{{ event.hero_title_image.url }}" alt="{{ event.title }}">
+    {% else %}
+      {% if event.kicker %}<p class="hero-kicker-text">{{ event.kicker }}</p>{% endif %}
+      <h1>{{ event.title }}</h1>
+    {% endif %}
+    <p class="hero-dates"><span class="dot"></span>{{ event.hero_date_display }}</p>
+    {% if event.mission_statement %}
+      <p class="mission">{{ event.mission_statement }}</p>
+      {% if site_settings.motto %}<p class="motto">{{ site_settings.motto }}</p>{% endif %}
+    {% endif %}
+  </div>
+</header>
+
+<main id="main">
+  {% if success %}
+  <div class="card success">
+    <div class="mark-circle"></div>
+    <h2>You're registered</h2>
+    <p>Thank you for signing up for {{ event.title }}. We look forward to seeing you {{ event.date_range_display }}.</p>
+  </div>
+  {% else %}
+  <div class="card">
+    {% if rate_limited %}
+    <div class="error-banner">
+      <p class="error-title">Too many attempts</p>
+      <p>We&rsquo;ve received several submissions from you in a short time. Please wait a few minutes and try again.</p>
+    </div>
+    {% endif %}
+
+    {% if missing %}
+    <div class="error-banner">
+      <p class="error-title">Please fix the following before submitting:</p>
+      <ul>
+        {% for m in missing %}<li>{{ m }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if event.registration_deadline %}
+    <div class="notice">
+      <p class="notice-title">Registration closes {{ event.registration_deadline|date:"F j, Y" }}.</p>
+      <p class="notice-body">{{ event.registration_notice_body|default:"Please register by the deadline to help us prepare for meals, children's programming, and other event needs." }}{% if event.registration_notice_highlight %} <span class="highlight">{{ event.registration_notice_highlight }}</span>{% endif %}</p>
+    </div>
+    {% endif %}
+
+    <form id="reg-form" method="POST">
+      {% csrf_token %}
+
+      <section class="section">
+        <div class="section-title"><span class="mark"></span><h2>Your Information</h2></div>
+
+        <div class="field">
+          <label class="q" for="full_name">Full Name<span class="req">*</span></label>
+          <input type="text" id="full_name" name="full_name" placeholder="Short Answer" required>
+        </div>
+
+        <div class="field">
+          <label class="q" for="email">Email Address<span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="field">
+          <label class="q" for="phone">Phone Number<span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><span class="mark"></span><h2>Who's Attending?</h2></div>
+
+        <div class="field">
+          <label class="q" for="attendee_count">How many people will be attending with you?<span class="req">*</span></label>
+          <p class="help">Include yourself</p>
+          <input type="number" id="attendee_count" name="attendee_count" min="1" step="1" placeholder="Number" required>
+        </div>
+      </section>
+
+      {% for section in sections %}
+      <section class="section">
+        {% if section.title %}<div class="section-title"><span class="mark"></span><h2>{{ section.title }}</h2></div>{% endif %}
+        {% for question in section.questions %}
+          {% if question.depends_on_id %}
+          <div class="reveal" data-depends-on="{{ question.depends_on_id }}" data-depends-value="{{ question.depends_on_value }}" data-question-id="{{ question.id }}">
+            <div>{% include "events/_question_field.html" with question=question %}</div>
+          </div>
+          {% else %}
+          {% include "events/_question_field.html" with question=question %}
+          {% endif %}
+        {% endfor %}
+      </section>
+      {% endfor %}
+
+      <img class="submit-divider" src="{% static 'images/figma/submit-divider.svg' %}" alt="">
+
+      <div class="submit-row">
+        <button type="submit" class="submit">Submit</button>
+        <p class="submit-note">Fields marked with * are required</p>
+        {% if event.contact_email %}
+        <p class="contact-note">With any specific questions or concerns, please email <a href="mailto:{{ event.contact_email }}">{{ event.contact_email }}</a>.</p>
+        {% endif %}
+      </div>
+
+      {% if event.location %}
+      <p class="venue-note">{{ event.location }}</p>
+      {% endif %}
+
+      {% if event.hero_title_image %}
+      <img class="footer-logo" src="{% static 'images/figma/footer-logo.png' %}" alt="{{ event.kicker }}">
+      {% endif %}
+    </form>
+  </div>
+  {% endif %}
+</main>
+
+<script src="{% static 'js/register.js' %}"></script>
+</body>
+</html>

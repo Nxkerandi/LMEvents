@@ -1,0 +1,100 @@
+{% if question.question_type == "text" or question.question_type == "email" or question.question_type == "phone" or question.question_type == "number" %}
+<div class="field">
+  <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  {% if question.question_type == "email" %}
+  <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="you@example.com"{% if question.required %} required{% endif %}>
+  {% elif question.question_type == "phone" %}
+  <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Phone number"{% if question.required %} required{% endif %}>
+  {% elif question.question_type == "number" %}
+  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Number" min="0" step="1"{% if question.required %} required{% endif %}>
+  {% else %}
+  <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Short answer"{% if question.required %} required{% endif %}>
+  {% endif %}
+</div>
+
+{% elif question.question_type == "textarea" %}
+<div class="field">
+  <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  <textarea id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Long answer"{% if question.required %} required{% endif %}></textarea>
+</div>
+
+{% elif question.question_type == "boolean" %}
+<div class="field">
+  <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  <div class="choices">
+    <label class="choice"><input type="radio" name="q_{{ question.id }}" value="Yes" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required %} required{% endif %}><span class="box"></span><span class="label">Yes</span></label>
+    <label class="choice"><input type="radio" name="q_{{ question.id }}" value="No" data-controls-reveal data-question-id="{{ question.id }}"><span class="box"></span><span class="label">No</span></label>
+  </div>
+</div>
+
+{% elif question.question_type == "single_choice" %}
+<div class="field">
+  <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  <div class="choices">
+    {% for option in question.options.all %}
+    <label class="choice">
+      <input type="radio" name="q_{{ question.id }}" value="{{ option.value }}" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required and forloop.first %} required{% endif %}>
+      <span class="box"></span>
+      {% if option.secondary_label %}
+      <span class="label">{{ option.label }} | <span class="tag">{{ option.secondary_label }}</span></span>
+      {% else %}
+      <span class="label">{{ option.label }}</span>
+      {% endif %}
+    </label>
+    {% endfor %}
+  </div>
+</div>
+
+{% elif question.question_type == "multi_choice" %}
+<div class="field"{% if question.required %} data-required-group="1"{% endif %}>
+  <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  <div class="choices">
+    {% for option in question.options.all %}
+    <label class="choice">
+      <input type="checkbox" name="q_{{ question.id }}" value="{{ option.value }}">
+      <span class="box"></span>
+      {% if option.secondary_label %}
+      <span class="label">{{ option.label }} | <span class="tag">{{ option.secondary_label }}</span></span>
+      {% else %}
+      <span class="label">{{ option.label }}</span>
+      {% endif %}
+    </label>
+    {% endfor %}
+  </div>
+  {% if question.required %}<p class="group-error">Please select at least one option.</p>{% endif %}
+</div>
+
+{% elif question.question_type == "repeatable_group" %}
+<div class="field" data-repeat-group data-question-id="{{ question.id }}"{% if question.required %} data-required-group="1"{% endif %}>
+  <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
+  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  <div data-repeat-rows id="rows-{{ question.id }}"></div>
+  <button type="button" class="add-row-btn">+ Add another</button>
+  {% if question.required %}<p class="group-error">Please add at least one.</p>{% endif %}
+
+  <template id="tmpl-{{ question.id }}">
+    <div class="repeat-row-main">
+      {% for sub in question.sub_questions.all %}
+      {% if sub.question_type != "single_choice" %}
+      <input type="text" class="repeat-text-input" name="q_{{ sub.id }}_@@IDX@@" placeholder="{{ sub.label }}">
+      {% endif %}
+      {% endfor %}
+      <button type="button" class="remove-row-btn" aria-label="Remove this row">&times;</button>
+    </div>
+    {% for sub in question.sub_questions.all %}
+    {% if sub.question_type == "single_choice" %}
+    <div class="pill-group">
+      {% for option in sub.options.all %}
+      <label class="pill"><input type="radio" name="q_{{ sub.id }}_@@IDX@@" value="{{ option.value }}"><span>{{ option.label }}</span></label>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </template>
+</div>
+{% endif %}

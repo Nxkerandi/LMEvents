@@ -1,0 +1,136 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Elijah's Ark Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after{ box-sizing: border-box; }
+  body{
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    background: #f9f7f3;
+    color: #414141;
+    padding: 2rem 1.25rem;
+  }
+  .wrap{ width: 100%; max-width: 380px; }
+  .logo{
+    display: block;
+    height: 48px;
+    width: auto;
+    margin: 0 auto 2rem;
+  }
+  .card{
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(10,35,66,0.1);
+    padding: 2rem 1.75rem;
+  }
+  .card h1{
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0a2342;
+    margin: 0 0 1.5rem;
+    text-align: center;
+  }
+  .field{ margin-bottom: 1.1rem; }
+  .field:last-of-type{ margin-bottom: 0; }
+  .field label{
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #0a2342;
+    margin-bottom: 0.4rem;
+  }
+  .field input{
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #414141;
+    background: #f9f7f3;
+    border: 0.75px solid #000000;
+    border-radius: 5px;
+    padding: 0.7rem 0.95rem;
+  }
+  .field input:focus-visible{
+    outline: none;
+    border-color: #b88b4a;
+    box-shadow: 0 0 0 3px rgba(184,139,74,0.22);
+  }
+  .errornote{
+    background: rgba(161,60,60,0.08);
+    border-left: 4px solid #a13c3c;
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    font-size: 0.88rem;
+    color: #a13c3c;
+    margin: 0 0 1.25rem;
+  }
+  button.submit{
+    width: 100%;
+    font-family: inherit;
+    background: #0a2342;
+    color: #dce2f0;
+    border: none;
+    border-radius: 8px;
+    padding: 0.85rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    margin-top: 1.5rem;
+  }
+  button.submit:hover{ opacity: 0.9; }
+  .footnote{
+    text-align: center;
+    font-size: 0.8rem;
+    color: #808080;
+    margin: 1.5rem 0 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <img class="logo" src="{% static 'images/figma/footer-logo.png' %}" alt="Elijah's Ark Mission">
+
+  <div class="card">
+    <h1>Sign in to continue</h1>
+
+    {% if form.errors and not form.non_field_errors %}
+    <div class="errornote">Please correct the error below.</div>
+    {% endif %}
+    {% if form.non_field_errors %}
+    <div class="errornote">
+      {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <form action="{{ app_path }}" method="post" id="login-form">
+      {% csrf_token %}
+      <div class="field">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" autofocus autocapitalize="none" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+        <input type="hidden" name="next" value="{{ next }}">
+      </div>
+      <button type="submit" class="submit">Sign in</button>
+    </form>
+  </div>
+
+  <p class="footnote">Elijah's Ark Mission &mdash; Internal Use Only</p>
+</div>
+
+</body>
+</html>
