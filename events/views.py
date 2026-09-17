@@ -31,16 +31,23 @@ REGISTRATION_RATE_LIMIT = 5
 REGISTRATION_RATE_WINDOW = timedelta(minutes=10)
 
 # Read-only preview table on the registration page, kept in sync by hand with
-# the "Which sessions will you attend?" EventQuestion's options rather than
-# derived from them — this app currently only serves one event, so the
-# duplication is cheap; if a second event with a different schedule is added,
-# revisit this rather than editing it in place.
-SCHEDULE_ROWS = [
-    {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-    {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-    {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-    {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
-]
+# each location's "Which sessions will you attend?" EventQuestion options
+# rather than derived from them — this app only ever serves the two locations
+# of one campaign, so the duplication is cheap; revisit if that changes.
+SCHEDULE_ROWS_BY_SLUG = {
+    "preparing-the-home-for-home-tn": [
+        {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
+    ],
+    "preparing-the-home-for-home-ca": [
+        {"date": "Wed, Oct 21", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Thu, Oct 22", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Fri, Oct 23", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
+        {"date": "Sat, Oct 24", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
+    ],
+}
 
 
 def _client_ip(request):
@@ -293,6 +300,14 @@ def _process_question(registration, question, post, missing):
         _save_scalar_answer(registration, question, value)
 
 
+def initial_page_view(request):
+    # Landing page in front of both locations' registration forms — a picker,
+    # not an Event itself, so it lists whatever's published rather than
+    # hardcoding the two current slugs.
+    events = Event.objects.filter(is_published=True).order_by("start_date")
+    return render(request, "events/initial_page.html", {"events": events})
+
+
 def registration_view(request, slug):
     event = get_object_or_404(Event, slug=slug, is_published=True)
 
@@ -302,7 +317,7 @@ def registration_view(request, slug):
             return render(request, "events/register.html", {
                 "event": event,
                 "sections": _group_sections(_top_questions(event)),
-                "schedule_rows": SCHEDULE_ROWS,
+                "schedule_rows": SCHEDULE_ROWS_BY_SLUG.get(event.slug, []),
                 "rate_limited": True,
             }, status=429)
 
@@ -376,7 +391,7 @@ def registration_view(request, slug):
         return render(request, "events/register.html", {
             "event": event,
             "sections": _group_sections(top_questions),
-            "schedule_rows": SCHEDULE_ROWS,
+            "schedule_rows": SCHEDULE_ROWS_BY_SLUG.get(event.slug, []),
             "missing": missing,
         }, status=400)
 
@@ -386,7 +401,7 @@ def registration_view(request, slug):
     return render(request, "events/register.html", {
         "event": event,
         "sections": _group_sections(_top_questions(event)),
-        "schedule_rows": SCHEDULE_ROWS,
+        "schedule_rows": SCHEDULE_ROWS_BY_SLUG.get(event.slug, []),
     })
 
 

@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Preparing The Home For Home | Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+
+<img class="hero-image" src="{% static 'images/figma/hero-banner.jpg' %}" alt="Preparing The Home For Home">
+
+<main id="main">
+  <div class="lm-card">
+    <p class="card-title">SELECT YOUR EVENT</p>
+    <div class="field" style="margin-bottom:0;">
+      <label class="q" for="event-select">Which event will you be attending?<span class="req">*</span></label>
+      <select id="event-select" class="event-select">
+        <option value="" disabled selected>Choose an event</option>
+        {% for event in events %}
+        <option value="{% url 'events:register' event.slug %}">{{ event.location }} &mdash; {{ event.date_range_display }}</option>
+        {% endfor %}
+      </select>
+      <p class="help help--plain">Select an event above to see its details and registration form.</p>
+    </div>
+  </div>
+</main>
+
+<script>
+  document.getElementById('event-select').addEventListener('change', function(e){
+    if(e.target.value) window.location.href = e.target.value;
+  });
+</script>
+</body>
+</html>

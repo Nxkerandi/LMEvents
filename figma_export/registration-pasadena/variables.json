@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "source": "https://www.figma.com/design/KT1MB0kyS04Sc5HKBxhGaz/Living-Manna-Registration-Page?node-id=40-892&m=dev",
+    "fileKey": "KT1MB0kyS04Sc5HKBxhGaz",
+    "nodeId": "40:892",
+    "siblingFrame": "4:7 (Savannah / Harbert Hills Academy, pulled earlier into ../registration/)",
+    "note": "get_variable_defs returned {} — no Figma Variables bound here, same as the Savannah frame. Colors/typography/spacing tokens are identical to ../registration/variables.json except where §diffFromSavannah below calls out a real difference — refer to that file for the full shared token set rather than repeating it here."
+  },
+  "content": {
+    "eventName": "Preparing The Home For Home",
+    "eventDates": "October 21–24, 2026",
+    "eventVenueAddress": "1280 E. Washington Blvd, Pasadena, CA, 91104",
+    "eventVenueName": null,
+    "eventVenueNameNote": "Not stated anywhere in live text on this page (unlike Savannah's 'Harbert Hills Academy' in its footer) — the hero image names 'Pasadena SDA Church' but that's baked-in pixel text, not page copy. Flag for content owner.",
+    "registrationDeadline": "Sunday, October 4, 2026",
+    "admission": "Free Admission",
+    "speakers": ["Devaney & Fazlyn Haupt", "Elvin & Marcia Bridges"],
+    "aboutBody": "Join us for four days of meetings designed to prepare our hearts and homes for what lies ahead. Together we'll consider what it means to build a home that honors God now, in view of the eternal home He is preparing for us.",
+    "quote": "\"The well-being of society, the success of the church, and the prosperity of the nation truly depend upon home influences.\"",
+    "quoteAttribution": "ELLEN G. WHITE, THE ADVENTIST HOME, p. 15.1",
+    "schedule": [
+      { "date": "Wed, Oct 21", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Thu, Oct 22", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Fri, Oct 23", "session": "Preparing The Home For Home – Evening Session", "time": "6.00 PM - 9.00 PM" },
+      { "date": "Sat, Oct 24", "session": "Preparing The Home For Home – All-Day Program", "time": "9.00 AM - 6.00 PM" }
+    ],
+    "registrationNotice": "Please register by Sunday, October 4, 2026. This event is free to attend.",
+    "formFields": {
+      "firstName": "First Name *",
+      "lastName": "Last Name *",
+      "phoneNumber": "Phone Number *",
+      "emailAddress": "Email Address *",
+      "totalAttending": "Total People Attending, Including Yourself *",
+      "totalAttendingHelper": "Count everyone in your group — yourself, your spouse, and any children or youth.",
+      "note": "identical wording to the Savannah event on every field in this section"
+    },
+    "sessionsQuestion": {
+      "label": "WHICH SESSIONS WILL YOU ATTEND? *",
+      "options": [
+        { "date": "Wednesday, October 21", "description": "Evening Session : 6.00 PM - 9.00 PM" },
+        { "date": "Thursday, October 22", "description": "Evening Session : 6.00 PM - 9.00 PM" },
+        { "date": "Friday, October 23", "description": "Evening Session : 6.00 PM - 9.00 PM", "note": "correct here — confirms Savannah's 'Friday, October 1' is an isolated typo in that frame, not a shared default" },
+        { "date": "Saturday, October 24", "description": "All-Day Program : 9.00 AM - 6.00 PM" }
+      ]
+    },
+    "childrenYouth": {
+      "heading": "CHILDREN & YOUTH",
+      "body": "Cradle Roll and Youth Sabbath School classes, plus afternoon classes, are available. Outside of class time, we respectfully ask that parents keep their children with them at all times.",
+      "question": "Will children or youth be attending with you? *",
+      "options": ["Yes", "No"],
+      "note": "identical to Savannah, no event-specific content"
+    },
+    "sabbathMeal": {
+      "heading": "SABBATH MEAL",
+      "body": "Meals will be provided for all visitors on Sabbath, October 24, only.",
+      "question": "Will you be joining us for the Sabbath meal? *",
+      "options": ["Yes", "No"]
+    },
+    "additionalInfo": {
+      "heading": "ADDITIONAL INFORMATION",
+      "question": "What city do you currently live in? (Optional)",
+      "placeholder": "Short answer",
+      "note": "identical to Savannah, no event-specific content"
+    },
+    "submitButton": "Submit",
+    "footerContact": {
+      "line1Prefix": "Questions about registration?",
+      "line1Body": "Contact Marcia Bridges · livingmanna@yahoo.com",
+      "line1Email": "livingmanna@yahoo.com",
+      "line1Note": "identical to Savannah, same contact for both events",
+      "line2": "1280 E. Washington Blvd, Pasadena, CA, 91104",
+      "line2Note": "address only, no venue name — see eventVenueNameNote above"
+    }
+  },
+  "assetsReusedFromSavannah": {
+    "heroBackground": { "sourceFile": "../registration/hero-bg.png", "confirmedIdenticalVia": "same asset filename d4714.png" },
+    "iconCalendar": { "sourceFile": "../registration/icon-calendar.svg", "confirmedIdenticalVia": "same filename d2214.svg and same sizeBytes 5905" },
+    "iconLocation": { "sourceFile": "../registration/icon-location.svg", "confirmedIdenticalVia": "same filename 89403.svg and same sizeBytes 1036" },
+    "iconAdmission": { "sourceFile": "../registration/icon-admission.svg", "confirmedIdenticalVia": "same filename 5853e.svg and same sizeBytes 1429" },
+    "iconNotice": { "sourceFile": "../registration/icon-notice.svg", "confirmedIdenticalVia": "same filename ecb47.svg and same sizeBytes 3362" }
+  },
+  "newAssetsThisFolder": {
+    "frame": { "file": "frame.png", "dimensions": "2880x10288 (2x of 1440x5144)" }
+  },
+  "diffFromSavannah": {
+    "contentDiffs": [
+      "dates", "venue address", "schedule table dates", "registration deadline date",
+      "which-sessions option dates", "sabbath meal body date", "footer line 2 text"
+    ],
+    "stylingOrStructuralDiffs": [
+      {
+        "what": "Footer line 2 (venue/address line)",
+        "savannah": { "weight": "Regular", "color": "#1c1c1c", "lineHeight": "32px", "letterSpacing": "0.32px" },
+        "pasadena": { "weight": "SemiBold", "color": "#0b2242", "lineHeight": "normal", "letterSpacing": "0.48px" },
+        "impact": "Also causes a 12px shorter content-column height on the Pasadena frame (4145.25 vs 4157.25) since this text box is shorter under leading-normal than leading-32px.",
+        "flagForOwner": "Confirm whether this divergence is intentional or a copy-paste slip that should match Savannah's plain footer style."
+      },
+      {
+        "what": "Footer line 2 content completeness",
+        "detail": "Pasadena's line has no venue/church name prefix (Savannah's does: 'Harbert Hills Academy ·'). Content gap, not styling.",
+        "flagForOwner": true
+      },
+      {
+        "what": "Info-pills container / pill widths",
+        "detail": "Wider on Pasadena (e.g. 520.93px vs 424.93px block width) purely from longer address/date text reflowing an auto-layout container — not a deliberate design change, no action needed."
+      }
+    ],
+    "confirmedNotTypoInherited": "Savannah's 'Friday, October 1' which-sessions typo does NOT appear on Pasadena (correctly 'Friday, October 23') — confirms it's isolated to the Savannah frame only."
+  }
+}

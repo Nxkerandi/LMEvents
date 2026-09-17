@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "source": "https://www.figma.com/design/KT1MB0kyS04Sc5HKBxhGaz/Living-Manna-Registration-Page?node-id=40-1063&m=dev",
+    "fileKey": "KT1MB0kyS04Sc5HKBxhGaz",
+    "nodeId": "40:1063",
+    "note": "get_variable_defs returned {} — no Figma Variables bound here, consistent with every other node pulled from this file. All colors/fonts reuse tokens already documented in ../registration/variables.json."
+  },
+  "content": {
+    "cardHeading": "SELECT YOUR EVENT",
+    "questionLabel": "Which event will you be attending? *",
+    "selectorPlaceholder": "Choose an event",
+    "helperText": "Select an event above to see its details and registration form.",
+    "note": "This is the complete copy on the page — no per-option event labels appear anywhere in the live text; see navigationBehavior.openQuestions below."
+  },
+  "selectorStyling": {
+    "width": 950,
+    "height": 71,
+    "background": "#fbf5ed",
+    "border": "1px solid #d8a52f",
+    "borderNote": "full 1px, not the 0.5px used on registration-page text inputs — confirm intentional vs. inconsistency",
+    "cornerRadius": 10,
+    "paddingX": 40,
+    "paddingY": 20,
+    "placeholderStyle": {
+      "fontFamily": "Montserrat",
+      "fontWeight": "Light Italic",
+      "fontSize": 16,
+      "lineHeight": 32,
+      "letterSpacing": 0.32,
+      "color": "#000000"
+    },
+    "hasChevronOrArrowIcon": false,
+    "hasExpandedStateInDesign": false
+  },
+  "navigationBehavior": {
+    "status": "AMBIGUOUS — not confirmed by the static design, flagged for product/design owner",
+    "observedInSource": {
+      "wholeFrameWrappedInAnchor": true,
+      "anchorHref": null,
+      "anchorNote": "get_design_context wraps the ENTIRE page (hero + card) in a single <a>/cursor-pointer element with no resolvable href — almost certainly a stray/leftover Figma prototype 'on click, navigate to frame' hotspot on the top-level frame (possibly left over from duplicating one of the registration-page frames), not a literal 'whole page is one link' instruction. Do not implement it as such.",
+      "separateContinueButton": false,
+      "buttonNote": "No 'Continue'/'Next'/submit button exists anywhere in this frame's node tree."
+    },
+    "bestInference": "Selecting a value in the dropdown immediately navigates to that event's registration page (no separate confirm step) — supported by the helper text phrasing and the total absence of any button. Not explicitly confirmed by the design.",
+    "openQuestions": [
+      "Confirm immediate-navigate-on-select vs. a Continue button being added later.",
+      "Confirm the exact option label text for each event (not present anywhere in the live copy).",
+      "Confirm what the stray whole-frame <a> wrapper was actually meant to do, if anything, in Figma's prototype — likely nothing and safe to ignore, but worth a quick check with the file owner."
+    ],
+    "suggestedOptionLabelsIfImplementingNow": [
+      "Harbert Hills Academy — October 14–17, 2026 (Savannah, TN)",
+      "Pasadena SDA Church — October 21–24, 2026 (Pasadena, CA)"
+    ]
+  },
+  "spacing": {
+    "heroHeight": 700,
+    "cardWidth": 1100,
+    "cardY": 800,
+    "gapHeroToCard": 100,
+    "cardPaddingX": 100,
+    "cardPaddingY": 45,
+    "cardInternalGap": 30,
+    "cardCornerRadius": 20,
+    "cardBorder": "0.5px solid #d8a52f",
+    "cardHeight": 348
+  },
+  "assetsReused": {
+    "heroBackground": { "sourceFile": "../registration/hero-bg.png", "confirmedIdenticalVia": "same asset filename d4714.png" }
+  },
+  "newAssetsThisFolder": {
+    "frame": { "file": "frame.png", "dimensions": "2880x2624 (2x of 1440x1312)" }
+  }
+}
