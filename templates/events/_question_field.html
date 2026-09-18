@@ -1,43 +1,49 @@
+{% load events_extras %}
 {% if question.question_type == "text" or question.question_type == "email" or question.question_type == "phone" or question.question_type == "number" %}
+{% with current=answers|get_item:question.id %}
 <div class="field">
   <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
   {% if question.question_type == "email" %}
-  <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="you@example.com"{% if question.required %} required{% endif %}>
+  <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="you@example.com"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "phone" %}
-  <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Phone number"{% if question.required %} required{% endif %}>
+  <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Phone number"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "number" %}
-  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Number" min="0" step="1"{% if question.required %} required{% endif %}>
+  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Number" min="0" step="1"{% if question.required %} required{% endif %}>
   {% else %}
-  <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Short answer"{% if question.required %} required{% endif %}>
+  <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Short answer"{% if question.required %} required{% endif %}>
   {% endif %}
 </div>
+{% endwith %}
 
 {% elif question.question_type == "textarea" %}
 <div class="field">
   <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
-  <textarea id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Long answer"{% if question.required %} required{% endif %}></textarea>
+  <textarea id="q_{{ question.id }}" name="q_{{ question.id }}" placeholder="Long answer"{% if question.required %} required{% endif %}>{{ answers|get_item:question.id }}</textarea>
 </div>
 
 {% elif question.question_type == "boolean" %}
+{% with current=answers|get_item:question.id %}
 <div class="field">
   <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
   <div class="choices boolean-choices">
-    <label class="choice toggle-pill"><input type="radio" name="q_{{ question.id }}" value="Yes" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required %} required{% endif %}><span class="box"></span><span class="label">Yes</span></label>
-    <label class="choice toggle-pill"><input type="radio" name="q_{{ question.id }}" value="No" data-controls-reveal data-question-id="{{ question.id }}"><span class="box"></span><span class="label">No</span></label>
+    <label class="choice toggle-pill{% if current == "Yes" %} is-checked{% endif %}"><input type="radio" name="q_{{ question.id }}" value="Yes" data-controls-reveal data-question-id="{{ question.id }}"{% if current == "Yes" %} checked{% endif %}{% if question.required %} required{% endif %}><span class="box"></span><span class="label">Yes</span></label>
+    <label class="choice toggle-pill{% if current == "No" %} is-checked{% endif %}"><input type="radio" name="q_{{ question.id }}" value="No" data-controls-reveal data-question-id="{{ question.id }}"{% if current == "No" %} checked{% endif %}><span class="box"></span><span class="label">No</span></label>
   </div>
 </div>
+{% endwith %}
 
 {% elif question.question_type == "single_choice" %}
+{% with current=answers|get_item:question.id %}
 <div class="field">
   <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
   <div class="choices">
     {% for option in question.options.all %}
-    <label class="choice">
-      <input type="radio" name="q_{{ question.id }}" value="{{ option.value }}" data-controls-reveal data-question-id="{{ question.id }}"{% if question.required and forloop.first %} required{% endif %}>
+    <label class="choice{% if option.value == current %} is-checked{% endif %}">
+      <input type="radio" name="q_{{ question.id }}" value="{{ option.value }}" data-controls-reveal data-question-id="{{ question.id }}"{% if option.value == current %} checked{% endif %}{% if question.required and forloop.first %} required{% endif %}>
       <span class="box"></span>
       {% if option.secondary_label %}
       <span class="label">{{ option.label }}<span class="tag">{{ option.secondary_label }}</span></span>
@@ -48,15 +54,17 @@
     {% endfor %}
   </div>
 </div>
+{% endwith %}
 
 {% elif question.question_type == "multi_choice" %}
+{% with current=answers|get_item:question.id %}
 <div class="field"{% if question.required %} data-required-group="1"{% endif %}>
   <label class="q">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
   <div class="choices">
     {% for option in question.options.all %}
-    <label class="choice">
-      <input type="checkbox" name="q_{{ question.id }}" value="{{ option.value }}">
+    <label class="choice{% if option.value in current %} is-checked{% endif %}">
+      <input type="checkbox" name="q_{{ question.id }}" value="{{ option.value }}"{% if option.value in current %} checked{% endif %}>
       <span class="box"></span>
       {% if option.secondary_label %}
       <span class="label">{{ option.label }}<span class="tag">{{ option.secondary_label }}</span></span>
@@ -68,6 +76,7 @@
   </div>
   {% if question.required %}<p class="group-error">Please select at least one option.</p>{% endif %}
 </div>
+{% endwith %}
 
 {% elif question.question_type == "repeatable_group" %}
 <div class="field" data-repeat-group data-question-id="{{ question.id }}"{% if question.required %} data-required-group="1"{% endif %}>

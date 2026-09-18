@@ -67,12 +67,26 @@
         });
       }
 
-      function addRow(){
+      function addRow(prefillRow){
         counter++;
         var html = tmpl.innerHTML.split('@@IDX@@').join(counter);
         var row = document.createElement('div');
         row.className = 'repeat-row';
         row.innerHTML = html;
+        if(prefillRow){
+          row.querySelectorAll('input').forEach(function(input){
+            var m = /^q_(\d+)_/.exec(input.name);
+            if(!m) return;
+            var value = prefillRow[m[1]];
+            if(value == null) return;
+            if(input.type === 'radio'){
+              if(input.value === value) input.checked = true;
+            } else {
+              input.value = value;
+            }
+          });
+          row.querySelectorAll('input:checked').forEach(syncChoice);
+        }
         var removeBtn = row.querySelector('.remove-row-btn');
         if(removeBtn){
           removeBtn.addEventListener('click', function(){
@@ -85,8 +99,20 @@
         updateRemoveVisibility();
       }
 
-      if(addBtn) addBtn.addEventListener('click', addRow);
+      if(addBtn) addBtn.addEventListener('click', function(){ addRow(); });
       repeatGroupAdders[groupId] = addRow;
+    });
+  }
+
+  // ---- Pre-fill repeatable-group rows on the edit-registration page ----
+  function prefillRepeatGroups(){
+    var dataEl = document.getElementById('existing-repeat-rows');
+    if(!dataEl) return;
+    var answers = JSON.parse(dataEl.textContent);
+    Object.keys(repeatGroupAdders).forEach(function(groupId){
+      var rows = answers[groupId];
+      if(!Array.isArray(rows) || !rows.length) return;
+      rows.forEach(function(row){ repeatGroupAdders[groupId](row); });
     });
   }
 
@@ -123,8 +149,9 @@
     if(!form) return;
 
     bindChoiceStyling(document);
-    bindReveals(document);
     bindRepeatGroups(document);
+    prefillRepeatGroups();
+    bindReveals(document);
 
     form.addEventListener('submit', function(e){
       if(!validateRequiredGroups(form)){

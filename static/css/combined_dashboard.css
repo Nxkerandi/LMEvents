@@ -264,6 +264,20 @@ table.reg-table tr:hover td{ background: var(--success-bg); }
 .badge.yes{ background: var(--success-bg); color: var(--navy); border: 1px solid var(--gold); }
 @media (prefers-color-scheme: dark){ .badge.yes{ color: var(--gold-light); } }
 .badge.no{ background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.edit-cell{ text-align: right; white-space: nowrap; }
+.edit-link{ color: var(--navy); font-weight: 700; text-decoration: underline; font-size: 12.5px; }
+@media (prefers-color-scheme: dark){ .edit-link{ color: var(--gold-light); } }
+.topbar .back-link{
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(201,138,43,0.55);
+  color: #fdf6e8;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.topbar .back-link:hover{ background: rgba(255,255,255,0.18); }
 .count-pill{
   display: inline-block;
   background: var(--navy);

@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -324,6 +324,100 @@ def registration_view(request, slug):
     })
 
 
+def _current_answers(registration, top_questions):
+    scalar_lookup, choice_lookup = _build_answer_lookups(registration.event)
+    return {
+        str(q.id): _question_value(registration.id, q, scalar_lookup, choice_lookup)
+        for q in top_questions
+    }
+
+
+@staff_member_required
+def edit_registration_view(request, registration_id):
+    registration = get_object_or_404(Registration, pk=registration_id)
+    event = registration.event
+    top_questions = list(_top_questions(event))
+    short = "tn" if event.slug.endswith("-tn") else "ca"
+    back_url = f"/preparing-the-home-for-home/dashboard/?event={short}"
+
+    if request.method == "POST":
+        missing = []
+        full_name = request.POST.get("full_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        attendee_count_raw = request.POST.get("attendee_count", "").strip()
+
+        if not full_name:
+            missing.append("Full name")
+        if not email:
+            missing.append("Email address")
+        else:
+            try:
+                validate_email(email)
+            except ValidationError:
+                missing.append("Email address (enter a valid email, e.g. name@example.com)")
+            else:
+                # Excludes this registration's own row — unlike the public
+                # form's duplicate check, editing a registration back to its
+                # own unchanged email must not trip the uniqueness guard.
+                if Registration.objects.filter(event=event, email__iexact=email).exclude(pk=registration.pk).exists():
+                    missing.append("Email address — another registration for this event already uses this email.")
+        if not phone:
+            missing.append("Phone number")
+
+        attendee_count = None
+        try:
+            attendee_count = int(attendee_count_raw)
+            if attendee_count < 1:
+                raise ValueError
+        except ValueError:
+            missing.append("Number of attendees")
+
+        if not missing:
+            with transaction.atomic():
+                registration.full_name = full_name
+                registration.email = email
+                registration.phone = phone
+                registration.attendee_count = attendee_count
+                registration.save()
+
+                # Clear and re-save every answer rather than diffing —
+                # simplest correct way to handle every question type
+                # (including repeatable-group rows) through the same
+                # _process_question path the public form already uses.
+                RegistrationAnswer.objects.filter(registration=registration).delete()
+                RegistrationAnswerOption.objects.filter(registration=registration).delete()
+
+                for question in top_questions:
+                    _process_question(registration, question, request.POST, missing)
+
+                if missing:
+                    # Rolls back the whole save, including the top-level
+                    # field changes above — an edit either fully succeeds or
+                    # leaves the prior saved state untouched, never a mix.
+                    transaction.set_rollback(True)
+
+        if not missing:
+            return redirect(back_url)
+
+        return render(request, "events/edit_registration.html", {
+            "event": event,
+            "registration": registration,
+            "back_url": back_url,
+            "sections": _group_sections(top_questions),
+            "answers": _current_answers(registration, top_questions),
+            "missing": missing,
+        }, status=400)
+
+    return render(request, "events/edit_registration.html", {
+        "event": event,
+        "registration": registration,
+        "back_url": back_url,
+        "sections": _group_sections(top_questions),
+        "answers": _current_answers(registration, top_questions),
+    })
+
+
 # ── Staff dashboard ──────────────────────────────────────────────────────────
 
 def _question_meta(question):
@@ -482,6 +576,7 @@ def combined_dashboard_view(request):
             answers = reg["answers"]
             session_values = answers.get(str(session_q["id"]), []) if session_q else []
             registrations.append({
+                "id": reg["id"],
                 "event": event.slug,
                 "event_short": short,
                 "full_name": reg["full_name"],

@@ -134,6 +134,7 @@
         +   '<td><span class="count-pill">' + esc(r.total) + '</span></td>'
         +   '<td><span class="badge ' + (r.children ? 'yes' : 'no') + '">' + (r.children ? 'Yes' : 'No') + '</span></td>'
         +   '<td><span class="badge ' + (r.meal ? 'yes' : 'no') + '">' + (r.meal ? 'Yes' : 'No') + '</span></td>'
+        +   '<td class="edit-cell"><a class="edit-link" href="/registrations/' + r.id + '/edit/">Edit</a></td>'
         + '</tr>';
     }).join('');
     renderPagination(data.length);
