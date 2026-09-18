@@ -1,15 +1,12 @@
-import csv
 import re
 from collections import defaultdict
 from datetime import timedelta
 
-from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -80,6 +77,27 @@ def _format_submitted(dt):
     return f"{dt.strftime('%b')} {dt.day}, {dt.year} · {hour12}:{dt.strftime('%M')} {dt.strftime('%p')}"
 
 
+def _format_submitted_short(dt):
+    return f"{dt.strftime('%b')} {dt.day}"
+
+
+def _format_date_short(d):
+    return f"{d.strftime('%b')} {d.day}, {d.year}"
+
+
+def _short_session_label(full_label):
+    # "Wednesday, October 14" -> "Wed, Oct 14" — abbreviated form for the
+    # combined dashboard's compact table tags and session-bar rows. Derived
+    # rather than stored since the seed data's option labels are already in
+    # a consistent "Weekday, Month Day" shape.
+    try:
+        weekday, rest = full_label.split(", ", 1)
+        month, day = rest.split(" ", 1)
+        return f"{weekday[:3]}, {month[:3]} {day}"
+    except ValueError:
+        return full_label
+
+
 def _top_questions(event):
     return (
         event.questions
@@ -114,105 +132,6 @@ def events_list_view(request):
         "draft_count": len(events) - published_count,
         "total_registrations": sum(e.registration_count for e in events),
     })
-
-
-def _unique_slug(base_slug):
-    candidate = f"{base_slug}-copy"
-    n = 2
-    while Event.objects.filter(slug=candidate).exists():
-        candidate = f"{base_slug}-copy-{n}"
-        n += 1
-    return candidate
-
-
-@staff_member_required
-def duplicate_event_view(request, slug):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
-
-    original = get_object_or_404(Event, slug=slug)
-
-    with transaction.atomic():
-        new_event = Event.objects.create(
-            title=f"Copy of {original.title}",
-            slug=_unique_slug(original.slug),
-            kicker=original.kicker,
-            mission_statement=original.mission_statement,
-            start_date=original.start_date,
-            end_date=original.end_date,
-            registration_deadline=original.registration_deadline,
-            registration_notice_body=original.registration_notice_body,
-            registration_notice_highlight=original.registration_notice_highlight,
-            location=original.location,
-            contact_email=original.contact_email,
-            # Draft by default — this is a starting point, not ready to
-            # accept real registrations until staff review/adjust it
-            # (dates especially — those are almost certainly wrong for a
-            # new event and copied here only so the required fields aren't
-            # left blank).
-            is_published=False,
-        )
-        # Point at the same underlying file rather than duplicating it on
-        # disk — perfectly safe, ImageField assignment on the draft later
-        # (if staff upload a new photo) creates a new file without touching
-        # the original event's copy.
-        if original.hero_background_image:
-            new_event.hero_background_image = original.hero_background_image.name
-        if original.hero_title_image:
-            new_event.hero_title_image = original.hero_title_image.name
-        if original.hero_background_image or original.hero_title_image:
-            new_event.save()
-
-        # Two passes: create every question first, then wire up
-        # parent_question/depends_on afterward — both are self-referencing
-        # FKs to *other questions on this same event*, so they need to be
-        # remapped to the new cloned rows, not left pointing at the
-        # original event's questions.
-        question_map = {}
-        old_questions = list(original.questions.all())
-        for old_q in old_questions:
-            new_q = EventQuestion.objects.create(
-                event=new_event,
-                section_title=old_q.section_title,
-                order=old_q.order,
-                question_type=old_q.question_type,
-                label=old_q.label,
-                short_label=old_q.short_label,
-                help_text=old_q.help_text,
-                required=old_q.required,
-                depends_on_value=old_q.depends_on_value,
-                show_in_insights=old_q.show_in_insights,
-                quick_filter=old_q.quick_filter,
-                quick_filter_sums_attendees=old_q.quick_filter_sums_attendees,
-                show_in_table=old_q.show_in_table,
-                counts_as_attendees=old_q.counts_as_attendees,
-            )
-            question_map[old_q.id] = new_q
-            for old_opt in old_q.options.all():
-                EventQuestionOption.objects.create(
-                    question=new_q,
-                    label=old_opt.label,
-                    value=old_opt.value,
-                    secondary_label=old_opt.secondary_label,
-                    order=old_opt.order,
-                )
-
-        for old_q in old_questions:
-            if not old_q.parent_question_id and not old_q.depends_on_id:
-                continue
-            new_q = question_map[old_q.id]
-            if old_q.parent_question_id in question_map:
-                new_q.parent_question = question_map[old_q.parent_question_id]
-            if old_q.depends_on_id in question_map:
-                new_q.depends_on = question_map[old_q.depends_on_id]
-            new_q.save()
-
-    messages.success(
-        request,
-        f'Duplicated "{original.title}" as "{new_event.title}" ({new_event.questions.count()} questions copied). '
-        f"It's saved as a draft — review the dates and details below before publishing.",
-    )
-    return redirect(f"/admin/events/event/{new_event.pk}/change/")
 
 
 # ── Public registration form ────────────────────────────────────────────────
@@ -525,45 +444,61 @@ def _build_dashboard_data(event):
     return top_questions, registrations_json, questions_meta
 
 
+# Bespoke to this one campaign (two locations of "Preparing The Home For
+# Home") rather than a generic multi-event view — the per-question shape
+# below (Sessions/Bringing children/Joining meal/City) is specific to this
+# campaign's four questions, matched by short_label since each location has
+# its own EventQuestion rows (and therefore different ids) for the same
+# logical question.
+COMBINED_DASHBOARD_SLUGS = ["preparing-the-home-for-home-tn", "preparing-the-home-for-home-ca"]
+
+
 @staff_member_required
-def dashboard_view(request, slug):
-    event = get_object_or_404(Event, slug=slug)
-    _, registrations_json, questions_meta = _build_dashboard_data(event)
-    return render(request, "events/dashboard.html", {
-        "event": event,
-        "registrations_json": registrations_json,
-        "questions_meta": questions_meta,
+def combined_dashboard_view(request):
+    events = list(Event.objects.filter(slug__in=COMBINED_DASHBOARD_SLUGS).order_by("start_date"))
+
+    event_meta = []
+    registrations = []
+    for event in events:
+        short = "TN" if event.slug.endswith("-tn") else "CA"
+        top_questions, regs, meta = _build_dashboard_data(event)
+        meta_by_label = {m["short_label"]: m for m in meta}
+        session_q = meta_by_label.get("Sessions")
+        children_q = meta_by_label.get("Bringing children")
+        meal_q = meta_by_label.get("Joining meal")
+        city_q = meta_by_label.get("City")
+
+        session_order = [_short_session_label(o["label"]) for o in (session_q["options"] if session_q else [])]
+        event_meta.append({
+            "slug": event.slug,
+            "short": short,
+            "name": event.location.split(" · ")[0] if event.location else event.title,
+            "deadline": _format_date_short(event.registration_deadline) if event.registration_deadline else "",
+            "session_order": session_order,
+        })
+
+        submitted_by_id = dict(event.registrations.values_list("id", "submitted_at"))
+        for reg in regs:
+            answers = reg["answers"]
+            session_values = answers.get(str(session_q["id"]), []) if session_q else []
+            registrations.append({
+                "event": event.slug,
+                "event_short": short,
+                "full_name": reg["full_name"],
+                "email": reg["email"],
+                "phone": reg["phone"],
+                "city": answers.get(str(city_q["id"]), "") if city_q else "",
+                "sessions": [_short_session_label(v) for v in session_values],
+                "total": reg["attendee_count"],
+                "children": answers.get(str(children_q["id"]), "") == "Yes" if children_q else False,
+                "meal": answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False,
+                "submitted": _format_submitted_short(submitted_by_id[reg["id"]]),
+                "submitted_ts": submitted_by_id[reg["id"]].isoformat(),
+            })
+
+    return render(request, "events/combined_dashboard.html", {
+        "event_meta_json": event_meta,
+        "registrations_json": registrations,
     })
 
 
-@staff_member_required
-def export_csv_view(request, slug):
-    event = get_object_or_404(Event, slug=slug)
-    top_questions, registrations_json, questions_meta = _build_dashboard_data(event)
-
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="{event.slug}-registrations.csv"'
-    writer = csv.writer(response)
-
-    headers = ["Full Name", "Email", "Phone", "Attendee Count", "Submitted"]
-    for q in top_questions:
-        headers.append(q.label)
-    writer.writerow(headers)
-
-    for reg in registrations_json:
-        row = [reg["full_name"], reg["email"], reg["phone"], reg["attendee_count"], reg["submitted"]]
-        for q in top_questions:
-            value = reg["answers"].get(str(q.id))
-            if q.question_type == EventQuestion.QuestionType.REPEATABLE_GROUP:
-                sub_qs = list(q.sub_questions.all())
-                row.append(" | ".join(
-                    ", ".join(f"{sq.label}: {r.get(str(sq.id), '')}" for sq in sub_qs)
-                    for r in (value or [])
-                ))
-            elif isinstance(value, list):
-                row.append(", ".join(value))
-            else:
-                row.append(value or "")
-        writer.writerow(row)
-
-    return response

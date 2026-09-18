@@ -1,0 +1,93 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Registrations Dashboard | Preparing The Home For Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/combined_dashboard.css' %}">
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Preparing The Home For Home &mdash; Registrations</h1>
+    <div class="sub">Harbert Hills Academy (TN) &middot; Pasadena SDA Church (CA)</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    {% for e in event_meta_json %}
+    <span class="deadline-tag">{{ e.short }} deadline: {{ e.deadline }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="filter-bar">
+    <label for="eventFilter">Event:</label>
+    <select class="filter-select" id="eventFilter">
+      <option value="all">All Events</option>
+      {% for e in event_meta_json %}
+      <option value="{{ e.short|lower }}">{{ e.name }} ({{ e.short }})</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-value" id="statRegistrants">0</div><div class="stat-label">Registrations</div></div>
+    <div class="stat-card"><div class="stat-value" id="statAttending">0</div><div class="stat-label">Total People Attending</div></div>
+    <div class="stat-card"><div class="stat-value" id="statMeals">0</div><div class="stat-label">Sabbath Meals Needed</div></div>
+    <div class="stat-card"><div class="stat-value" id="statChildren">0</div><div class="stat-label">Families Bringing Kids</div></div>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">Session Attendance</p>
+    <div class="session-bars" id="sessionBars"></div>
+  </div>
+
+  <div class="panel">
+    <div class="table-toolbar">
+      <p class="panel-title" style="margin:0;">All Registrations</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;flex:1;justify-content:flex-end;">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name, email, or city...">
+        <button class="export-btn" id="exportBtn">Export CSV</button>
+      </div>
+    </div>
+    <div class="pill-bar" id="pillBar">
+      <button type="button" class="pill-btn active" data-quick-filter="all">All</button>
+      <button type="button" class="pill-btn" data-quick-filter="children">Bringing children</button>
+      <button type="button" class="pill-btn" data-quick-filter="meal">Joining meal</button>
+    </div>
+    <div class="table-scroll">
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="full_name">Name</th>
+            <th class="sortable" data-sort="event_short">Event</th>
+            <th>Contact</th>
+            <th class="sortable" data-sort="city">City</th>
+            <th>Sessions</th>
+            <th class="sortable" data-sort="total">Attending</th>
+            <th class="sortable" data-sort="children">Children</th>
+            <th class="sortable" data-sort="meal">Sabbath Meal</th>
+            <th class="sortable" data-sort="submitted_ts">Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <p class="empty-state" id="emptyState">No registrations match your search.</p>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+</div>
+
+{{ event_meta_json|json_script:"event-meta-data" }}
+{{ registrations_json|json_script:"registrations-data" }}
+<script src="{% static 'js/combined_dashboard.js' %}"></script>
+</body>
+</html>

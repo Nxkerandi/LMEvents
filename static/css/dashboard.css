@@ -43,21 +43,6 @@
 a{ color: var(--heading); }
 a:hover{ text-decoration: none; }
 
-/* Matches the plain <a> links it sits next to in action cells (e.g. the
-   "Duplicate" button in the events list) — same color/underline/size, just
-   a <button> under the hood since it POSTs a mutating action. */
-.link-btn{
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  font: inherit;
-  color: var(--heading);
-  text-decoration: underline;
-  cursor: pointer;
-}
-.link-btn:hover{ text-decoration: none; }
-
 body{
   margin: 0;
   font-family: 'Montserrat', sans-serif;
