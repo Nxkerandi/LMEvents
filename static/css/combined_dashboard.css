@@ -226,11 +226,16 @@ table.reg-table th{
   padding: 0 12px 10px;
   border-bottom: 2px solid var(--gold);
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  z-index: 2;
 }
 table.reg-table th.sortable{ cursor: pointer; user-select: none; }
 table.reg-table th.sortable:hover{ color: var(--ink); }
 table.reg-table th.sortable .sort-arrow{ display: inline-block; margin-left: 3px; opacity: 0.5; }
 table.reg-table th.sortable.sort-active .sort-arrow{ opacity: 1; color: var(--gold); }
+table.reg-table th.numeric, table.reg-table td.numeric{ text-align: right; }
 table.reg-table td{
   padding: 13px 12px;
   border-bottom: 1px solid var(--border);
@@ -238,7 +243,19 @@ table.reg-table td{
   vertical-align: top;
 }
 table.reg-table tr:last-child td{ border-bottom: none; }
-table.reg-table tr:hover td{ background: var(--success-bg); }
+table.reg-table tbody tr:nth-child(even) td{ background: var(--bg); }
+table.reg-table tbody tr:hover td{ background: var(--success-bg); }
+
+/* Name and Edit columns stay pinned while the wide table scrolls
+   horizontally on narrow screens — otherwise there's no way to tell whose
+   row you're looking at, or reach Edit, once you've scrolled sideways. */
+table.reg-table th.name-cell, table.reg-table td.name-cell{ position: sticky; left: 0; z-index: 3; background: var(--card-bg); }
+table.reg-table th.edit-cell, table.reg-table td.edit-cell{ position: sticky; right: 0; z-index: 3; background: var(--card-bg); }
+table.reg-table th.name-cell, table.reg-table th.edit-cell{ z-index: 4; }
+table.reg-table tbody tr:nth-child(even) td.name-cell,
+table.reg-table tbody tr:nth-child(even) td.edit-cell{ background: var(--bg); }
+table.reg-table tbody tr:hover td.name-cell,
+table.reg-table tbody tr:hover td.edit-cell{ background: var(--success-bg); }
 .name-cell{ font-weight: 700; }
 .sub-cell{ font-size: 12px; color: var(--muted); margin-top: 2px; }
 .session-tags{ display: flex; flex-wrap: wrap; gap: 4px; max-width: 220px; }
@@ -268,6 +285,7 @@ table.reg-table tr:hover td{ background: var(--success-bg); }
 .edit-link{ color: var(--navy); font-weight: 700; text-decoration: underline; font-size: 12.5px; }
 @media (prefers-color-scheme: dark){ .edit-link{ color: var(--gold-light); } }
 .topbar .back-link{
+  font-family: inherit;
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(201,138,43,0.55);
   color: #fdf6e8;
@@ -276,8 +294,11 @@ table.reg-table tr:hover td{ background: var(--success-bg); }
   padding: 8px 16px;
   border-radius: 999px;
   text-decoration: none;
+  cursor: pointer;
 }
 .topbar .back-link:hover{ background: rgba(255,255,255,0.18); }
+.topbar-actions{ display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.logout-form{ margin: 0; }
 .count-pill{
   display: inline-block;
   background: var(--navy);

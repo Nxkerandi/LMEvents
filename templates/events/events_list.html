@@ -20,10 +20,11 @@
       <h1>Events</h1>
       <p class="topbar-dates">{{ events|length }} event{{ events|length|pluralize }}</p>
     </div>
-    <span style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+    <div class="topbar-actions">
       <a class="export" href="{% url 'events:combined_dashboard' %}">Dashboard</a>
       <a class="export" href="/admin/events/event/add/">+ New Event</a>
-    </span>
+      <form class="logout-form" method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button type="submit" class="logout-link">Log out</button></form>
+    </div>
   </div>
 </div>
 

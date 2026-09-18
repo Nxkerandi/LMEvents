@@ -106,6 +106,29 @@ a.export{
 }
 a.export:hover{ background: #dba13e; }
 
+.topbar-actions{
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.logout-form{ margin: 0; }
+.logout-link{
+  font-family: inherit;
+  background: transparent;
+  color: var(--pale-fixed);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+.logout-link:hover{ border-color: rgba(255,255,255,0.6); color: #fff; }
+
 /* ---------- Main ---------- */
 
 main{

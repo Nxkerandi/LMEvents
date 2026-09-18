@@ -19,7 +19,10 @@
     <h1>Edit Registration</h1>
     <div class="sub">{{ registration.full_name }} &middot; {{ event.title }}</div>
   </div>
-  <a class="back-link" href="{{ back_url }}">&larr; Back to dashboard</a>
+  <div class="topbar-actions">
+    <a class="back-link" href="{{ back_url }}">&larr; Back to dashboard</a>
+    <form class="logout-form" method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button type="submit" class="back-link">Log out</button></form>
+  </div>
 </div>
 
 <main id="main" style="max-width: 700px; margin: 0 auto; padding: 2.5rem 1.25rem 3.5rem;">

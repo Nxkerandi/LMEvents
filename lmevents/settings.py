@@ -86,6 +86,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 LOGIN_URL = '/admin/login/'
+# Drop straight back to the login form after logout (shared-device staff
+# tool) instead of Django admin's default "logged out" confirmation page.
+LOGOUT_REDIRECT_URL = '/admin/login/'
 
 # ── Railway ───────────────────────────────────────────────────────────────────
 _railway_domain = config("RAILWAY_PUBLIC_DOMAIN", default="")

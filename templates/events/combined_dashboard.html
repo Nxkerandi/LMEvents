@@ -18,10 +18,11 @@
     <h1>Preparing The Home For Home &mdash; Registrations</h1>
     <div class="sub">Harbert Hills Academy (TN) &middot; Pasadena SDA Church (CA)</div>
   </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
     {% for e in event_meta_json %}
     <span class="deadline-tag">{{ e.short }} deadline: {{ e.deadline }}</span>
     {% endfor %}
+    <form class="logout-form" method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button type="submit" class="back-link">Log out</button></form>
   </div>
 </div>
 
@@ -75,14 +76,14 @@
       <table class="reg-table">
         <thead>
           <tr>
-            <th class="sortable" data-sort="full_name">Name</th>
+            <th class="sortable name-cell" data-sort="full_name">Name</th>
             <th class="sortable" data-sort="event_short">Event</th>
             <th>Contact</th>
             <th>Sessions</th>
-            <th class="sortable" data-sort="total">Attending</th>
+            <th class="sortable numeric" data-sort="total">Attending</th>
             <th class="sortable" data-sort="children">Children</th>
             <th class="sortable" data-sort="meal">Sabbath Meal</th>
-            <th></th>
+            <th class="edit-cell"></th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>

@@ -131,7 +131,7 @@
         +   '<td><span class="event-tag ' + r.event_short.toLowerCase() + '">' + esc(r.event_short) + '</span></td>'
         +   '<td>' + esc(r.email) + '<div class="sub-cell">' + esc(r.phone) + '</div></td>'
         +   '<td><div class="session-tags">' + sessionTags + '</div></td>'
-        +   '<td><span class="count-pill">' + esc(r.total) + '</span></td>'
+        +   '<td class="numeric"><span class="count-pill">' + esc(r.total) + '</span></td>'
         +   '<td><span class="badge ' + (r.children ? 'yes' : 'no') + '">' + (r.children ? 'Yes' : 'No') + '</span></td>'
         +   '<td><span class="badge ' + (r.meal ? 'yes' : 'no') + '">' + (r.meal ? 'Yes' : 'No') + '</span></td>'
         +   '<td class="edit-cell"><a class="edit-link" href="/registrations/' + r.id + '/edit/">Edit</a></td>'
