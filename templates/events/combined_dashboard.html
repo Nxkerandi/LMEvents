@@ -44,9 +44,18 @@
     <div class="stat-card"><div class="stat-value" id="statChildren">0</div><div class="stat-label">Families Bringing Kids</div></div>
   </div>
 
-  <div class="panel">
-    <p class="panel-title">Session Attendance</p>
-    <div class="session-bars" id="sessionBars"></div>
+  <div class="insights-grid">
+    <div class="panel">
+      <p class="panel-title">Session Attendance</p>
+      <p class="panel-sub">Across all registrations.</p>
+      <div class="session-bars" id="sessionBars"></div>
+    </div>
+
+    <div class="panel">
+      <p class="panel-title">Location</p>
+      <p class="panel-sub">Across all registrations.</p>
+      <div class="session-bars" id="locationBars"></div>
+    </div>
   </div>
 
   <div class="panel">
@@ -69,12 +78,10 @@
             <th class="sortable" data-sort="full_name">Name</th>
             <th class="sortable" data-sort="event_short">Event</th>
             <th>Contact</th>
-            <th class="sortable" data-sort="city">City</th>
             <th>Sessions</th>
             <th class="sortable" data-sort="total">Attending</th>
             <th class="sortable" data-sort="children">Children</th>
             <th class="sortable" data-sort="meal">Sabbath Meal</th>
-            <th class="sortable" data-sort="submitted_ts">Submitted</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>

@@ -12,7 +12,7 @@
   var PAGE_SIZE = 25;
   var currentPage = 1;
   var activeQuickFilter = 'all';
-  var sortState = { key: 'submitted_ts', dir: 'desc' };
+  var sortState = { key: 'full_name', dir: 'asc' };
 
   function esc(value){
     return String(value == null ? '' : value)
@@ -61,6 +61,31 @@
     }).join('');
   }
 
+  function renderLocationBars(data){
+    var wrap = document.getElementById('locationBars');
+    var counts = {};
+    data.forEach(function(r){
+      var city = (r.city || '').trim() || 'Not provided';
+      counts[city] = (counts[city] || 0) + 1;
+    });
+    var entries = Object.keys(counts).map(function(k){ return { label: k, count: counts[k] }; })
+      .sort(function(a, b){ return b.count - a.count; });
+    if(entries.length === 0){
+      wrap.innerHTML = '<p class="panel-sub" style="margin:0;">No data yet.</p>';
+      return;
+    }
+    var max = entries.reduce(function(m, e){ return Math.max(m, e.count); }, 1);
+    wrap.innerHTML = entries.map(function(e){
+      var pct = Math.round((e.count / max) * 100);
+      return ''
+        + '<div class="session-row">'
+        +   '<span class="s-label">' + esc(e.label) + '</span>'
+        +   '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>'
+        +   '<span class="s-count">' + e.count + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
   function renderPagination(total){
     var wrap = document.getElementById('pagination');
     var pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -105,12 +130,10 @@
         +   '<td class="name-cell">' + esc(r.full_name) + '</td>'
         +   '<td><span class="event-tag ' + r.event_short.toLowerCase() + '">' + esc(r.event_short) + '</span></td>'
         +   '<td>' + esc(r.email) + '<div class="sub-cell">' + esc(r.phone) + '</div></td>'
-        +   '<td>' + esc(r.city || '—') + '</td>'
         +   '<td><div class="session-tags">' + sessionTags + '</div></td>'
         +   '<td><span class="count-pill">' + esc(r.total) + '</span></td>'
         +   '<td><span class="badge ' + (r.children ? 'yes' : 'no') + '">' + (r.children ? 'Yes' : 'No') + '</span></td>'
         +   '<td><span class="badge ' + (r.meal ? 'yes' : 'no') + '">' + (r.meal ? 'Yes' : 'No') + '</span></td>'
-        +   '<td>' + esc(r.submitted) + '</td>'
         + '</tr>';
     }).join('');
     renderPagination(data.length);
@@ -183,6 +206,7 @@
     var result = currentFilters();
     renderStats(result.filtered);
     renderSessionBars(result.filtered, result.evKey);
+    renderLocationBars(result.filtered);
     renderPillBar();
     updateSortHeaders();
     renderTable(result.filtered);
