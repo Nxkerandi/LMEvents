@@ -71,6 +71,9 @@
       <button type="button" class="pill-btn active" data-quick-filter="all">All</button>
       <button type="button" class="pill-btn" data-quick-filter="children">Bringing children</button>
       <button type="button" class="pill-btn" data-quick-filter="meal">Joining meal</button>
+      {% if any_cancelled %}
+      <button type="button" class="pill-btn" data-quick-filter="cancelled">Cancelled</button>
+      {% endif %}
     </div>
     <div class="table-scroll">
       <table class="reg-table">

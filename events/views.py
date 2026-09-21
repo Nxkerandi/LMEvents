@@ -9,6 +9,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from .models import (
     Event,
@@ -418,6 +419,26 @@ def edit_registration_view(request, registration_id):
     })
 
 
+@staff_member_required
+@require_POST
+def cancel_registration_view(request, registration_id):
+    registration = get_object_or_404(Registration, pk=registration_id)
+    if registration.cancelled_at is None:
+        registration.cancelled_at = timezone.now()
+        registration.save(update_fields=["cancelled_at"])
+    return redirect("events:edit_registration", registration_id=registration.id)
+
+
+@staff_member_required
+@require_POST
+def restore_registration_view(request, registration_id):
+    registration = get_object_or_404(Registration, pk=registration_id)
+    if registration.cancelled_at is not None:
+        registration.cancelled_at = None
+        registration.save(update_fields=["cancelled_at"])
+    return redirect("events:edit_registration", registration_id=registration.id)
+
+
 # ── Staff dashboard ──────────────────────────────────────────────────────────
 
 def _question_meta(question):
@@ -531,6 +552,7 @@ def _build_dashboard_data(event):
             "attendee_count": reg.attendee_count,
             "child_count": sum(len(answers[str(q.id)]) for q in child_group_questions),
             "submitted": _format_submitted(reg.submitted_at),
+            "cancelled": reg.cancelled_at is not None,
             "answers": answers,
         })
 
@@ -589,11 +611,13 @@ def combined_dashboard_view(request):
                 "meal": answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False,
                 "submitted": _format_submitted_short(submitted_by_id[reg["id"]]),
                 "submitted_ts": submitted_by_id[reg["id"]].isoformat(),
+                "cancelled": reg["cancelled"],
             })
 
     return render(request, "events/combined_dashboard.html", {
         "event_meta_json": event_meta,
         "registrations_json": registrations,
+        "any_cancelled": any(r["cancelled"] for r in registrations),
     })
 
 

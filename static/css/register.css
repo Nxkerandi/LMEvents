@@ -256,6 +256,26 @@ main{
 
 .error-banner ul{ margin: 0; padding-left: 1.2rem; color: var(--text); font-size: 0.92rem; }
 
+.error-banner.cancelled-banner{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.error-banner.cancelled-banner p{ margin: 0; color: var(--text); font-size: 0.92rem; }
+.error-banner.cancelled-banner strong{ color: var(--error); }
+
+.cancel-form{ margin-top: 1.25rem; text-align: center; }
+.cancel-btn, .restore-btn{
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  background: transparent;
+  border-radius: 10px;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cancel-btn{ color: var(--error); border: 1px solid var(--error); }
+.cancel-btn:hover{ background: rgba(161,60,60,0.08); }
+.restore-btn{ color: var(--navy); border: 1px solid var(--navy); }
+.restore-btn:hover{ background: rgba(11,34,66,0.06); }
+
 /* ---------- Form fields ---------- */
 
 .field-row{

@@ -26,6 +26,13 @@
 </div>
 
 <main id="main" style="max-width: 700px; margin: 0 auto; padding: 2.5rem 1.25rem 3.5rem;">
+  {% if registration.cancelled_at %}
+  <div class="error-banner cancelled-banner" style="margin-bottom: 1.75rem;">
+    <p><strong>Cancelled</strong> &middot; {{ registration.cancelled_at|date:"M j, Y, g:i A" }}. Excluded from stats and insights, but kept on record.</p>
+    <form method="POST" action="{% url 'events:restore_registration' registration.id %}">{% csrf_token %}<button type="submit" class="restore-btn">Restore registration</button></form>
+  </div>
+  {% endif %}
+
   {% if missing %}
   <div class="error-banner" style="margin-bottom: 1.75rem;">
     <p class="error-title">Please fix the following before saving:</p>
@@ -88,6 +95,13 @@
 
     </div>
   </form>
+
+  {% if not registration.cancelled_at %}
+  <form class="cancel-form" method="POST" action="{% url 'events:cancel_registration' registration.id %}" onsubmit="return confirm('Cancel this registration? It will be excluded from stats and insights, but kept on record and can be restored later.');">
+    {% csrf_token %}
+    <button type="submit" class="cancel-btn">Cancel registration</button>
+  </form>
+  {% endif %}
 </main>
 
 {{ answers|json_script:"existing-repeat-rows" }}

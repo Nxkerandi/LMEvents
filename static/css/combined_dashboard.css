@@ -256,6 +256,8 @@ table.reg-table tbody tr:nth-child(even) td.name-cell,
 table.reg-table tbody tr:nth-child(even) td.edit-cell{ background: var(--bg); }
 table.reg-table tbody tr:hover td.name-cell,
 table.reg-table tbody tr:hover td.edit-cell{ background: var(--success-bg); }
+table.reg-table tr.cancelled td{ opacity: 0.55; }
+table.reg-table tr.cancelled:hover td{ opacity: 0.8; }
 .name-cell{ font-weight: 700; }
 .sub-cell{ font-size: 12px; color: var(--muted); margin-top: 2px; }
 .session-tags{ display: flex; flex-wrap: wrap; gap: 4px; max-width: 220px; }

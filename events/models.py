@@ -186,6 +186,10 @@ class Registration(models.Model):
     phone = models.CharField(max_length=40)
     attendee_count = models.PositiveIntegerField(default=1)
     submitted_at = models.DateTimeField(auto_now_add=True)
+    cancelled_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Soft-cancel: set by staff instead of deleting, so the record and its answers are kept.",
+    )
 
     class Meta:
         ordering = ["-submitted_at"]

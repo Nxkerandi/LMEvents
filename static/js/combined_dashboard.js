@@ -126,8 +126,8 @@
     body.innerHTML = pageData.map(function(r){
       var sessionTags = (r.sessions || []).map(function(s){ return '<span class="tag">' + esc(s.split(', ')[0]) + '</span>'; }).join('');
       return ''
-        + '<tr>'
-        +   '<td class="name-cell">' + esc(r.full_name) + '</td>'
+        + '<tr' + (r.cancelled ? ' class="cancelled"' : '') + '>'
+        +   '<td class="name-cell">' + esc(r.full_name) + (r.cancelled ? ' <span class="badge no">Cancelled</span>' : '') + '</td>'
         +   '<td><span class="event-tag ' + r.event_short.toLowerCase() + '">' + esc(r.event_short) + '</span></td>'
         +   '<td>' + esc(r.email) + '<div class="sub-cell">' + esc(r.phone) + '</div></td>'
         +   '<td><div class="session-tags">' + sessionTags + '</div></td>'
@@ -197,6 +197,7 @@
     var filtered = base.filter(function(r){
       if(activeQuickFilter === 'children') return r.children;
       if(activeQuickFilter === 'meal') return r.meal;
+      if(activeQuickFilter === 'cancelled') return r.cancelled;
       return true;
     });
     return { base: base, filtered: sortRows(filtered), evKey: evKey };
@@ -205,9 +206,16 @@
   function refresh(){
     currentPage = 1;
     var result = currentFilters();
-    renderStats(result.filtered);
-    renderSessionBars(result.filtered, result.evKey);
-    renderLocationBars(result.filtered);
+    // Cancelled registrations stay visible in the table (dimmed, so staff
+    // can find and restore them) but never count toward stats or insight
+    // bars — unless you're specifically looking at the Cancelled pill,
+    // where seeing their totals is the point.
+    var statsData = activeQuickFilter === 'cancelled'
+      ? result.filtered
+      : result.filtered.filter(function(r){ return !r.cancelled; });
+    renderStats(statsData);
+    renderSessionBars(statsData, result.evKey);
+    renderLocationBars(statsData);
     renderPillBar();
     updateSortHeaders();
     renderTable(result.filtered);
