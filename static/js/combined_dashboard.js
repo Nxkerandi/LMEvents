@@ -5,6 +5,8 @@
 
   var EVENT_META = JSON.parse(metaEl.textContent);
   var REGISTRATIONS = JSON.parse(dataEl.textContent);
+  var ageOrderEl = document.getElementById('children-age-order-data');
+  var CHILDREN_AGE_ORDER = ageOrderEl ? JSON.parse(ageOrderEl.textContent) : [];
 
   var eventInfo = {};
   EVENT_META.forEach(function(e){ eventInfo[e.short.toLowerCase()] = e; });
@@ -70,6 +72,31 @@
     });
     var entries = Object.keys(counts).map(function(k){ return { label: k, count: counts[k] }; })
       .sort(function(a, b){ return b.count - a.count; });
+    if(entries.length === 0){
+      wrap.innerHTML = '<p class="panel-sub" style="margin:0;">No data yet.</p>';
+      return;
+    }
+    var max = entries.reduce(function(m, e){ return Math.max(m, e.count); }, 1);
+    wrap.innerHTML = entries.map(function(e){
+      var pct = Math.round((e.count / max) * 100);
+      return ''
+        + '<div class="session-row">'
+        +   '<span class="s-label">' + esc(e.label) + '</span>'
+        +   '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>'
+        +   '<span class="s-count">' + e.count + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  function renderChildrenBars(data){
+    var wrap = document.getElementById('childrenBars');
+    if(!wrap) return;
+    var counts = {};
+    CHILDREN_AGE_ORDER.forEach(function(label){ counts[label] = 0; });
+    data.forEach(function(r){
+      (r.children_ages || []).forEach(function(age){ counts[age] = (counts[age] || 0) + 1; });
+    });
+    var entries = CHILDREN_AGE_ORDER.map(function(label){ return { label: label, count: counts[label] || 0 }; });
     if(entries.length === 0){
       wrap.innerHTML = '<p class="panel-sub" style="margin:0;">No data yet.</p>';
       return;
@@ -216,6 +243,7 @@
     renderStats(statsData);
     renderSessionBars(statsData, result.evKey);
     renderLocationBars(statsData);
+    renderChildrenBars(statsData);
     renderPillBar();
     updateSortHeaders();
     renderTable(result.filtered);

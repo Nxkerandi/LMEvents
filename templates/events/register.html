@@ -84,7 +84,7 @@
         <div class="schedule-head"><span style="flex:none; width:9.5rem;">DATE</span><span style="flex:1;">SESSION</span></div>
         {% for row in schedule_rows %}
         <div class="schedule-row">
-          <span class="schedule-date">{{ row.date }}</span>
+          <span class="schedule-date-col"><span class="schedule-date">{{ row.date }}</span></span>
           <span class="schedule-detail">{{ row.detail }}</span>
         </div>
         {% endfor %}

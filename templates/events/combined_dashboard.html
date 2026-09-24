@@ -57,6 +57,12 @@
       <p class="panel-sub">Across all registrations.</p>
       <div class="session-bars" id="locationBars"></div>
     </div>
+
+    <div class="panel">
+      <p class="panel-title">Children by Age</p>
+      <p class="panel-sub">Across all registrations.</p>
+      <div class="session-bars" id="childrenBars"></div>
+    </div>
   </div>
 
   <div class="panel">
@@ -100,6 +106,7 @@
 
 {{ event_meta_json|json_script:"event-meta-data" }}
 {{ registrations_json|json_script:"registrations-data" }}
+{{ children_age_order|json_script:"children-age-order-data" }}
 <script src="{% static 'js/combined_dashboard.js' %}"></script>
 </body>
 </html>

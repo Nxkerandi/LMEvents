@@ -37,13 +37,13 @@ SCHEDULE_ROWS_BY_SLUG = {
         {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
         {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
         {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
+        {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM - 6:00 PM"},
     ],
     "preparing-the-home-for-home-ca": [
-        {"date": "Wed, Oct 21", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Thu, Oct 22", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Fri, Oct 23", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Sat, Oct 24", "detail": "Preparing The Home For Home – All-Day Program · 9:00 AM - 6:00 PM"},
+        {"date": "Wed, Oct 21", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
+        {"date": "Thu, Oct 22", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
+        {"date": "Fri, Oct 23", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
+        {"date": "Sat, Oct 24", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM - 6:00 PM"},
     ],
 }
 
@@ -575,6 +575,7 @@ def combined_dashboard_view(request):
 
     event_meta = []
     registrations = []
+    children_age_order = []
     for event in events:
         short = "TN" if event.slug.endswith("-tn") else "CA"
         top_questions, regs, meta = _build_dashboard_data(event)
@@ -583,6 +584,12 @@ def combined_dashboard_view(request):
         children_q = meta_by_label.get("Bringing children")
         meal_q = meta_by_label.get("Joining meal")
         city_q = meta_by_label.get("City")
+        children_ages_q = meta_by_label.get("Children by age")
+        age_sub = None
+        if children_ages_q:
+            age_sub = next((sq for sq in children_ages_q["sub_questions"] if sq["type"] == "single_choice"), None)
+            if age_sub and not children_age_order:
+                children_age_order = [o["label"] for o in age_sub["options"]]
 
         session_order = [_short_session_label(o["label"]) for o in (session_q["options"] if session_q else [])]
         event_meta.append({
@@ -609,6 +616,10 @@ def combined_dashboard_view(request):
                 "total": reg["attendee_count"],
                 "children": answers.get(str(children_q["id"]), "") == "Yes" if children_q else False,
                 "meal": answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False,
+                "children_ages": (
+                    [row.get(str(age_sub["id"]), "") for row in answers.get(str(children_ages_q["id"]), []) if row.get(str(age_sub["id"]))]
+                    if children_ages_q and age_sub else []
+                ),
                 "submitted": _format_submitted_short(submitted_by_id[reg["id"]]),
                 "submitted_ts": submitted_by_id[reg["id"]].isoformat(),
                 "cancelled": reg["cancelled"],
@@ -618,6 +629,7 @@ def combined_dashboard_view(request):
         "event_meta_json": event_meta,
         "registrations_json": registrations,
         "any_cancelled": any(r["cancelled"] for r in registrations),
+        "children_age_order": children_age_order,
     })
 
 

@@ -189,12 +189,19 @@ main{
   align-items: center;
   gap: 0.75rem 1.5rem;
   border-bottom: 0.75px solid var(--gold-border);
+  padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
+.schedule-row:first-child{ padding-top: 0; }
 .schedule-row:last-child{ border-bottom: none; padding-bottom: 0; }
 
+/* Fixed-width column so the pill (whose own width varies with its text)
+   still lines up under the header's DATE label instead of shifting the
+   SESSION text left/right row to row. */
+.schedule-date-col{ flex: none; width: 9.5rem; }
+
 .schedule-date{
-  flex: none;
+  display: inline-block;
   background: var(--navy);
   color: #ffffff;
   font-weight: 600;
@@ -557,5 +564,5 @@ button.submit:disabled{ opacity: 0.6; cursor: not-allowed; }
   .lm-card{ padding: 2.8rem 4.5rem; }
   .lm-card--narrow{ padding: 2.5rem 3rem; }
   .schedule-head{ display: flex; gap: 3rem; }
-  .schedule-row{ flex-wrap: nowrap; }
+  .schedule-row{ flex-wrap: nowrap; gap: 0.75rem 3rem; }
 }
