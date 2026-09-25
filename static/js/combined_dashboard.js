@@ -32,9 +32,48 @@
     document.getElementById('statChildren').textContent = data.filter(function(r){ return r.children; }).length;
   }
 
+  // Names behind a bar — a registrant list for Sessions, shown when a
+  // specific bar's been clicked instead of the aggregate view.
+  function renderRegistrantList(matches){
+    if(!matches.length) return '<p class="panel-sub" style="margin:0;">No matches.</p>';
+    return '<div class="drilldown-list">' + matches.map(function(r){
+      return '<div class="drilldown-person" data-reg-id="' + r.id + '">'
+        +   '<span class="dp-name">' + esc(r.full_name) + '</span>'
+        +   '<span class="dp-sub">' + esc(r.total + (r.total === 1 ? ' attendee' : ' attendees')) + '</span>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function bindDrilldownClicks(wrap){
+    wrap.querySelectorAll('.drilldown-person').forEach(function(el){
+      el.addEventListener('click', function(){
+        jumpToRegistration(Number(el.getAttribute('data-reg-id')));
+      });
+    });
+  }
+
+  var sessionDrilldown = null; // { evKey, label } once a specific session bar's been clicked
+  var childrenDrilldown = null; // age-bracket label once a specific bar's been clicked
+
   function renderSessionBars(data, filterKey){
-    var eventsToShow = filterKey === 'all' ? Object.keys(eventInfo) : [filterKey];
     var wrap = document.getElementById('sessionBars');
+    var subEl = document.querySelector('#sessionPanel .panel-sub');
+
+    if(sessionDrilldown){
+      var info = eventInfo[sessionDrilldown.evKey];
+      var matches = data.filter(function(r){
+        return r.event_short.toLowerCase() === sessionDrilldown.evKey && (r.sessions || []).indexOf(sessionDrilldown.label) !== -1;
+      });
+      if(subEl) subEl.textContent = (info ? info.short + ' — ' : '') + sessionDrilldown.label;
+      wrap.innerHTML = renderRegistrantList(matches) + '<button type="button" class="insight-toggle" id="sessionBackBtn">← Back</button>';
+      var backBtn = document.getElementById('sessionBackBtn');
+      if(backBtn) backBtn.addEventListener('click', function(){ sessionDrilldown = null; refresh(); });
+      bindDrilldownClicks(wrap);
+      return;
+    }
+
+    if(subEl) subEl.textContent = 'Across all registrations.';
+    var eventsToShow = filterKey === 'all' ? Object.keys(eventInfo) : [filterKey];
     wrap.innerHTML = eventsToShow.map(function(evKey){
       var info = eventInfo[evKey];
       if(!info) return '';
@@ -49,7 +88,7 @@
         var count = counts[label] || 0;
         var pct = Math.round((count / max) * 100);
         return ''
-          + '<div class="session-row">'
+          + '<div class="session-row" data-event-key="' + evKey + '" data-label="' + esc(label) + '">'
           +   '<span class="s-label">' + esc(label) + '</span>'
           +   '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>'
           +   '<span class="s-count">' + count + '</span>'
@@ -61,10 +100,43 @@
         +   '<div class="session-bars-inner">' + rows + '</div>'
         + '</div>';
     }).join('');
+
+    wrap.querySelectorAll('.session-row').forEach(function(el){
+      el.addEventListener('click', function(){
+        sessionDrilldown = { evKey: el.getAttribute('data-event-key'), label: el.getAttribute('data-label') };
+        refresh();
+      });
+    });
   }
+
+  // Compact label+count pills for the expanded Location panel — past a
+  // handful of entries the bar length stops being useful for comparison
+  // (mostly 1s and 2s), so the expanded view trades the bar for density.
+  function renderChipGrid(entries){
+    return '<div class="insight-chip-grid">' + entries.map(function(e){
+      return '<div class="insight-chip" data-label="' + esc(e.label) + '"><span class="chip-label">' + esc(e.label) + '</span><span class="chip-count">' + e.count + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  var LOCATION_CAP = 7;
+  var locationExpanded = false;
+  var locationDrilldown = null; // city label once a specific bar/chip's been clicked
 
   function renderLocationBars(data){
     var wrap = document.getElementById('locationBars');
+    var subEl = document.querySelector('#locationPanel .panel-sub');
+
+    if(locationDrilldown){
+      var matches = data.filter(function(r){ return ((r.city || '').trim() || 'Not provided') === locationDrilldown; });
+      if(subEl) subEl.textContent = locationDrilldown;
+      wrap.innerHTML = renderRegistrantList(matches) + '<button type="button" class="insight-toggle" id="locationBackBtn">← Back</button>';
+      var backBtn = document.getElementById('locationBackBtn');
+      if(backBtn) backBtn.addEventListener('click', function(){ locationDrilldown = null; refresh(); });
+      bindDrilldownClicks(wrap);
+      return;
+    }
+
+    if(subEl) subEl.textContent = 'Across all registrations.';
     var counts = {};
     data.forEach(function(r){
       var city = (r.city || '').trim() || 'Not provided';
@@ -76,25 +148,72 @@
       wrap.innerHTML = '<p class="panel-sub" style="margin:0;">No data yet.</p>';
       return;
     }
-    var max = entries.reduce(function(m, e){ return Math.max(m, e.count); }, 1);
-    wrap.innerHTML = entries.map(function(e){
+    var hasMore = entries.length > LOCATION_CAP;
+    var visible = locationExpanded ? entries : entries.slice(0, LOCATION_CAP);
+    var max = visible.reduce(function(m, e){ return Math.max(m, e.count); }, 1);
+    var body = locationExpanded ? renderChipGrid(entries) : visible.map(function(e){
       var pct = Math.round((e.count / max) * 100);
       return ''
-        + '<div class="session-row">'
+        + '<div class="session-row" data-label="' + esc(e.label) + '">'
         +   '<span class="s-label">' + esc(e.label) + '</span>'
         +   '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>'
         +   '<span class="s-count">' + e.count + '</span>'
         + '</div>';
     }).join('');
+    var toggle = hasMore
+      ? '<button type="button" class="insight-toggle" id="locationToggle">' + (locationExpanded ? '← Back' : 'View all (' + entries.length + ') →') + '</button>'
+      : '';
+    wrap.innerHTML = body + toggle;
+
+    wrap.querySelectorAll('.session-row, .insight-chip').forEach(function(el){
+      el.addEventListener('click', function(){
+        locationDrilldown = el.getAttribute('data-label');
+        refresh();
+      });
+    });
+
+    var toggleBtn = document.getElementById('locationToggle');
+    if(toggleBtn){
+      toggleBtn.addEventListener('click', function(){
+        locationExpanded = !locationExpanded;
+        refresh();
+      });
+    }
   }
 
   function renderChildrenBars(data){
     var wrap = document.getElementById('childrenBars');
     if(!wrap) return;
+    var subEl = document.querySelector('#childrenPanel .panel-sub');
+
+    if(childrenDrilldown){
+      var matches = [];
+      data.forEach(function(r){
+        (r.children_detail || []).forEach(function(c){
+          if(c.age === childrenDrilldown) matches.push({ reg: r, childName: c.name });
+        });
+      });
+      if(subEl) subEl.textContent = childrenDrilldown;
+      var body = matches.length
+        ? '<div class="drilldown-list">' + matches.map(function(m){
+            return '<div class="drilldown-person" data-reg-id="' + m.reg.id + '">'
+              +   '<span class="dp-name">' + esc(m.childName || 'Unnamed') + '</span>'
+              +   '<span class="dp-sub">' + esc(m.reg.full_name) + '</span>'
+              + '</div>';
+          }).join('') + '</div>'
+        : '<p class="panel-sub" style="margin:0;">No matches.</p>';
+      wrap.innerHTML = body + '<button type="button" class="insight-toggle" id="childrenBackBtn">← Back</button>';
+      var backBtn = document.getElementById('childrenBackBtn');
+      if(backBtn) backBtn.addEventListener('click', function(){ childrenDrilldown = null; refresh(); });
+      bindDrilldownClicks(wrap);
+      return;
+    }
+
+    if(subEl) subEl.textContent = 'Across all registrations.';
     var counts = {};
     CHILDREN_AGE_ORDER.forEach(function(label){ counts[label] = 0; });
     data.forEach(function(r){
-      (r.children_ages || []).forEach(function(age){ counts[age] = (counts[age] || 0) + 1; });
+      (r.children_detail || []).forEach(function(c){ counts[c.age] = (counts[c.age] || 0) + 1; });
     });
     var entries = CHILDREN_AGE_ORDER.map(function(label){ return { label: label, count: counts[label] || 0 }; });
     if(entries.length === 0){
@@ -105,12 +224,19 @@
     wrap.innerHTML = entries.map(function(e){
       var pct = Math.round((e.count / max) * 100);
       return ''
-        + '<div class="session-row">'
+        + '<div class="session-row" data-label="' + esc(e.label) + '">'
         +   '<span class="s-label">' + esc(e.label) + '</span>'
         +   '<span class="s-track"><span class="s-fill" style="width:' + pct + '%"></span></span>'
         +   '<span class="s-count">' + e.count + '</span>'
         + '</div>';
     }).join('');
+
+    wrap.querySelectorAll('.session-row').forEach(function(el){
+      el.addEventListener('click', function(){
+        childrenDrilldown = el.getAttribute('data-label');
+        refresh();
+      });
+    });
   }
 
   function renderPagination(total){
@@ -153,7 +279,7 @@
     body.innerHTML = pageData.map(function(r){
       var sessionTags = (r.sessions || []).map(function(s){ return '<span class="tag">' + esc(s.split(', ')[0]) + '</span>'; }).join('');
       return ''
-        + '<tr' + (r.cancelled ? ' class="cancelled"' : '') + '>'
+        + '<tr data-id="' + r.id + '"' + (r.cancelled ? ' class="cancelled"' : '') + '>'
         +   '<td class="name-cell">' + esc(r.full_name) + (r.cancelled ? ' <span class="badge no">Cancelled</span>' : '') + '</td>'
         +   '<td><span class="event-tag ' + r.event_short.toLowerCase() + '">' + esc(r.event_short) + '</span></td>'
         +   '<td>' + esc(r.email) + '<div class="sub-cell">' + esc(r.phone) + '</div></td>'
@@ -230,6 +356,43 @@
     return { base: base, filtered: sortRows(filtered), evKey: evKey };
   }
 
+  // Expanding Location, or drilling into a Sessions/Children bar, focuses
+  // that one card exclusively — the other two hide rather than just
+  // reflowing underneath — so it reads as stepping into that data, not as
+  // the panel growing taller.
+  function applyFocusVisibility(){
+    var focus = (locationExpanded || locationDrilldown) ? 'location' : (sessionDrilldown ? 'session' : (childrenDrilldown ? 'children' : null));
+    ['session', 'location', 'children'].forEach(function(key){
+      var el = document.getElementById(key + 'Panel');
+      if(!el) return;
+      el.hidden = !!focus && focus !== key;
+      el.classList.toggle('panel--expanded', focus === key);
+    });
+  }
+
+  function jumpToRegistration(regId){
+    var reg = REGISTRATIONS.filter(function(r){ return r.id === regId; })[0];
+    if(!reg) return;
+
+    locationExpanded = false;
+    locationDrilldown = null;
+    sessionDrilldown = null;
+    childrenDrilldown = null;
+    activeQuickFilter = 'all';
+    document.getElementById('eventFilter').value = 'all';
+    document.getElementById('searchInput').value = reg.email;
+
+    refresh();
+
+    requestAnimationFrame(function(){
+      var rowEl = document.querySelector('tr[data-id="' + reg.id + '"]');
+      if(!rowEl) return;
+      rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      rowEl.classList.add('row-highlight');
+      setTimeout(function(){ rowEl.classList.remove('row-highlight'); }, 2000);
+    });
+  }
+
   function refresh(){
     currentPage = 1;
     var result = currentFilters();
@@ -240,6 +403,7 @@
     var statsData = activeQuickFilter === 'cancelled'
       ? result.filtered
       : result.filtered.filter(function(r){ return !r.cancelled; });
+    applyFocusVisibility();
     renderStats(statsData);
     renderSessionBars(statsData, result.evKey);
     renderLocationBars(statsData);

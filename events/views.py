@@ -586,8 +586,10 @@ def combined_dashboard_view(request):
         city_q = meta_by_label.get("City")
         children_ages_q = meta_by_label.get("Children by age")
         age_sub = None
+        name_sub = None
         if children_ages_q:
             age_sub = next((sq for sq in children_ages_q["sub_questions"] if sq["type"] == "single_choice"), None)
+            name_sub = next((sq for sq in children_ages_q["sub_questions"] if sq["type"] != "single_choice"), None)
             if age_sub and not children_age_order:
                 children_age_order = [o["label"] for o in age_sub["options"]]
 
@@ -616,8 +618,12 @@ def combined_dashboard_view(request):
                 "total": reg["attendee_count"],
                 "children": answers.get(str(children_q["id"]), "") == "Yes" if children_q else False,
                 "meal": answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False,
-                "children_ages": (
-                    [row.get(str(age_sub["id"]), "") for row in answers.get(str(children_ages_q["id"]), []) if row.get(str(age_sub["id"]))]
+                "children_detail": (
+                    [
+                        {"name": row.get(str(name_sub["id"]), "") if name_sub else "", "age": row.get(str(age_sub["id"]), "")}
+                        for row in answers.get(str(children_ages_q["id"]), [])
+                        if row.get(str(age_sub["id"]))
+                    ]
                     if children_ages_q and age_sub else []
                 ),
                 "submitted": _format_submitted_short(submitted_by_id[reg["id"]]),

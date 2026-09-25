@@ -112,6 +112,11 @@ class EventQuestion(models.Model):
         help_text="Compact label for dashboard stat cards, filter pills, and table columns (falls back to a truncated label).",
     )
     help_text = models.CharField(max_length=300, blank=True)
+    placeholder = models.CharField(
+        max_length=100, blank=True,
+        help_text="Custom placeholder text for a text/email/phone/number field's input. Leave blank for "
+                   "the generic default (e.g. \"Short answer\").",
+    )
     required = models.BooleanField(default=False)
     depends_on = models.ForeignKey(
         "self", related_name="dependents", null=True, blank=True, on_delete=models.SET_NULL,

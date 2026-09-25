@@ -5,13 +5,13 @@
   <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
   {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
   {% if question.question_type == "email" %}
-  <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="you@example.com"{% if question.required %} required{% endif %}>
+  <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'you@example.com' }}"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "phone" %}
-  <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Phone number"{% if question.required %} required{% endif %}>
+  <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Phone number' }}"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "number" %}
-  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Number" min="0" step="1"{% if question.required %} required{% endif %}>
+  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Number' }}" min="0" step="1"{% if question.required %} required{% endif %}>
   {% else %}
-  <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="Short answer"{% if question.required %} required{% endif %}>
+  <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Short answer' }}"{% if question.required %} required{% endif %}>
   {% endif %}
 </div>
 {% endwith %}
