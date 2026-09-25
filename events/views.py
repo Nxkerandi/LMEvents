@@ -34,16 +34,16 @@ REGISTRATION_RATE_WINDOW = timedelta(minutes=10)
 # of one campaign, so the duplication is cheap; revisit if that changes.
 SCHEDULE_ROWS_BY_SLUG = {
     "preparing-the-home-for-home-tn": [
-        {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM - 9:00 PM"},
-        {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM - 6:00 PM"},
+        {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM"},
     ],
     "preparing-the-home-for-home-ca": [
-        {"date": "Wed, Oct 21", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
-        {"date": "Thu, Oct 22", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
-        {"date": "Fri, Oct 23", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM - 9:00 PM"},
-        {"date": "Sat, Oct 24", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM - 6:00 PM"},
+        {"date": "Wed, Oct 21", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Thu, Oct 22", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Fri, Oct 23", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Sat, Oct 24", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM"},
     ],
 }
 
