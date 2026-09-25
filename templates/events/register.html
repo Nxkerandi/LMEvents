@@ -24,6 +24,14 @@
     <h2>You're registered</h2>
     <p>Thank you for signing up for {{ event.title }}. We look forward to seeing you {{ event.date_range_display }}.</p>
   </div>
+
+  {% if payment %}
+  <div class="lm-card payment-cta">
+    <p class="card-title card-title--navy">ONE LAST STEP</p>
+    <p class="card-body">You asked for {{ payment.qty }} meal{{ payment.qty|pluralize }} &mdash; that's <strong>${{ payment.total }}</strong>. Please submit your contribution using the link below.</p>
+    <a class="payment-link" href="{{ payment.url }}" target="_blank" rel="noopener">{{ payment.label }}</a>
+  </div>
+  {% endif %}
   {% else %}
 
   {% if rate_limited %}

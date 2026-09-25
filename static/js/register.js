@@ -26,6 +26,20 @@
     document.querySelectorAll('[data-depends-on="' + questionId + '"]').forEach(function(revealEl){
       var match = revealEl.getAttribute('data-depends-value') === value;
       revealEl.classList.toggle('open', match);
+
+      // The reveal hides content via a 0-height/overflow:hidden wrapper,
+      // not display:none — so a required field inside a closed reveal is
+      // still "rendered" as far as the browser's native validation is
+      // concerned, and silently blocks submission with no visible error
+      // near an invisible field. Toggle `required` itself to match.
+      revealEl.querySelectorAll('input, select, textarea').forEach(function(field){
+        if(match){
+          if(field.dataset.wasRequired === 'true') field.required = true;
+        } else {
+          if(field.required){ field.dataset.wasRequired = 'true'; field.required = false; }
+        }
+      });
+
       var container = revealEl.querySelector('[data-repeat-rows]');
       if(match){
         var groupId = revealEl.getAttribute('data-question-id');
@@ -47,6 +61,15 @@
     // initial state (e.g. re-rendering after a server-side validation error)
     root.querySelectorAll('[data-controls-reveal]:checked').forEach(function(input){
       updateReveals(input.getAttribute('data-question-id'), input.value);
+    });
+    // Any reveal still closed at this point (nothing checked yet, or this
+    // question wasn't answered on a re-render after an error elsewhere in
+    // the form) must not leave a required-but-hidden field able to
+    // silently block submission.
+    root.querySelectorAll('.reveal:not(.open)').forEach(function(revealEl){
+      revealEl.querySelectorAll('input, select, textarea').forEach(function(field){
+        if(field.required){ field.dataset.wasRequired = 'true'; field.required = false; }
+      });
     });
   }
 
@@ -144,6 +167,22 @@
     return ok;
   }
 
+  // ---- Live running total next to a quantity field (e.g. "$10 per meal") ----
+  function bindCostTotals(root){
+    root.querySelectorAll('input[data-cost-per-unit]').forEach(function(input){
+      var rate = parseFloat(input.getAttribute('data-cost-per-unit')) || 0;
+      var totalEl = root.querySelector('.cost-total[data-cost-for="' + input.id + '"]');
+      if(!totalEl) return;
+      function update(){
+        var qty = parseInt(input.value, 10);
+        var total = (isNaN(qty) || qty < 0) ? 0 : qty * rate;
+        totalEl.textContent = 'Total: $' + total.toFixed(2);
+      }
+      input.addEventListener('input', update);
+      update();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function(){
     var form = document.getElementById('reg-form');
     if(!form) return;
@@ -152,6 +191,7 @@
     bindRepeatGroups(document);
     prefillRepeatGroups();
     bindReveals(document);
+    bindCostTotals(document);
 
     form.addEventListener('submit', function(e){
       if(!validateRequiredGroups(form)){

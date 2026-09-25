@@ -34,9 +34,9 @@ REGISTRATION_RATE_WINDOW = timedelta(minutes=10)
 # of one campaign, so the duplication is cheap; revisit if that changes.
 SCHEDULE_ROWS_BY_SLUG = {
     "preparing-the-home-for-home-tn": [
-        {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
-        {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
-        {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 7:00 PM"},
+        {"date": "Wed, Oct 14", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM"},
+        {"date": "Thu, Oct 15", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM"},
+        {"date": "Fri, Oct 16", "detail": "Preparing The Home For Home – Evening Session · 6:00 PM"},
         {"date": "Sat, Oct 17", "detail": "Preparing The Home For Home – All-Day Program · 9:30 AM"},
     ],
     "preparing-the-home-for-home-ca": [
@@ -306,7 +306,20 @@ def registration_view(request, slug):
                     registration = None
 
         if not missing:
-            return redirect(f"{request.path}?submitted=1")
+            # A payable quantity question (e.g. "how many meals") only turns
+            # into a payment prompt once the registration is actually saved —
+            # never redirect to payment before that, or someone could pay
+            # without ever completing (or being recorded for) registration.
+            pay_question = next((q for q in top_questions if q.question_type == "number" and q.cost_per_unit is not None), None)
+            redirect_url = f"{request.path}?submitted=1"
+            if pay_question:
+                try:
+                    qty = int(request.POST.get(f"q_{pay_question.id}", "").strip())
+                except ValueError:
+                    qty = 0
+                if qty > 0:
+                    redirect_url += f"&pay_q={pay_question.id}&pay_qty={qty}"
+            return redirect(redirect_url)
 
         return render(request, "events/register.html", {
             "event": event,
@@ -316,7 +329,29 @@ def registration_view(request, slug):
         }, status=400)
 
     if request.GET.get("submitted") == "1":
-        return render(request, "events/register.html", {"event": event, "success": True})
+        payment = None
+        pay_q_id = request.GET.get("pay_q")
+        if pay_q_id:
+            pay_question = EventQuestion.objects.filter(
+                pk=pay_q_id, event=event, question_type="number", cost_per_unit__isnull=False,
+            ).first()
+            if pay_question:
+                try:
+                    qty = int(request.GET.get("pay_qty", "").strip())
+                except ValueError:
+                    qty = 0
+                if qty > 0 and pay_question.payment_link_url:
+                    # Recomputed from the question's own rate rather than
+                    # trusted from the URL, so the amount shown can't be
+                    # tampered with via query-string editing.
+                    payment = {
+                        "label": pay_question.payment_link_label or "Pay now",
+                        "url": pay_question.payment_link_url,
+                        "qty": qty,
+                        "total": qty * pay_question.cost_per_unit,
+                        "question_label": pay_question.label,
+                    }
+        return render(request, "events/register.html", {"event": event, "success": True, "payment": payment})
 
     return render(request, "events/register.html", {
         "event": event,

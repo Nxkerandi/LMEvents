@@ -117,6 +117,19 @@ class EventQuestion(models.Model):
         help_text="Custom placeholder text for a text/email/phone/number field's input. Leave blank for "
                    "the generic default (e.g. \"Short answer\").",
     )
+    cost_per_unit = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True,
+        help_text="Number-type questions only. When set, the form shows a live running total next "
+                   "to this field (this answer times cost per unit), e.g. $10 per meal.",
+    )
+    payment_link_url = models.URLField(
+        blank=True,
+        help_text="Optional payment/action link shown under this question, e.g. a PayPal donate link.",
+    )
+    payment_link_label = models.CharField(
+        max_length=60, blank=True,
+        help_text="Button text for payment_link_url, e.g. \"Pay for Meals\".",
+    )
     required = models.BooleanField(default=False)
     depends_on = models.ForeignKey(
         "self", related_name="dependents", null=True, blank=True, on_delete=models.SET_NULL,

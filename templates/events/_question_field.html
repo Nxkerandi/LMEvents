@@ -3,13 +3,14 @@
 {% with current=answers|get_item:question.id %}
 <div class="field">
   <label class="q" for="q_{{ question.id }}">{{ question.label }}{% if question.required %}<span class="req">*</span>{% endif %}</label>
-  {% if question.help_text %}<p class="help">{{ question.help_text }}</p>{% endif %}
+  {% if question.help_text %}<div class="help">{{ question.help_text|linebreaks }}</div>{% endif %}
   {% if question.question_type == "email" %}
   <input type="email" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'you@example.com' }}"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "phone" %}
   <input type="tel" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Phone number' }}"{% if question.required %} required{% endif %}>
   {% elif question.question_type == "number" %}
-  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Number' }}" min="0" step="1"{% if question.required %} required{% endif %}>
+  <input type="number" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Number' }}" min="0" step="1"{% if question.cost_per_unit %} data-cost-per-unit="{{ question.cost_per_unit }}"{% endif %}{% if question.required %} required{% endif %}>
+  {% if question.cost_per_unit %}<p class="cost-total" data-cost-for="q_{{ question.id }}">Total: $0.00</p>{% endif %}
   {% else %}
   <input type="text" id="q_{{ question.id }}" name="q_{{ question.id }}" value="{{ current }}" placeholder="{{ question.placeholder|default:'Short answer' }}"{% if question.required %} required{% endif %}>
   {% endif %}
