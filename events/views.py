@@ -107,6 +107,16 @@ def _top_questions(event):
     )
 
 
+def _all_top_questions(event):
+    # Hidden questions still count for stored answers and dashboard reporting —
+    # hiding only removes them from the public form and edit form.
+    return (
+        event.questions
+        .filter(parent_question__isnull=True)
+        .prefetch_related("options", "sub_questions__options")
+    )
+
+
 def _group_sections(questions):
     sections = []
     for q in questions:
@@ -421,8 +431,10 @@ def edit_registration_view(request, registration_id):
                 # simplest correct way to handle every question type
                 # (including repeatable-group rows) through the same
                 # _process_question path the public form already uses.
-                RegistrationAnswer.objects.filter(registration=registration).delete()
-                RegistrationAnswerOption.objects.filter(registration=registration).delete()
+                hidden_ids = [q.id for q in _all_top_questions(event).filter(hidden=True)]
+                hidden_ids += list(EventQuestion.objects.filter(parent_question_id__in=hidden_ids).values_list("id", flat=True))
+                RegistrationAnswer.objects.filter(registration=registration).exclude(question_id__in=hidden_ids).delete()
+                RegistrationAnswerOption.objects.filter(registration=registration).exclude(question_id__in=hidden_ids).delete()
 
                 for question in top_questions:
                     _process_question(registration, question, request.POST, missing)
@@ -556,7 +568,7 @@ def _question_value(reg_id, question, scalar_lookup, choice_lookup):
 
 
 def _build_dashboard_data(event):
-    top_questions = list(_top_questions(event))
+    top_questions = list(_all_top_questions(event))
     registrations = event.registrations.all()
     scalar_lookup, choice_lookup = _build_answer_lookups(event)
 
@@ -652,7 +664,11 @@ def combined_dashboard_view(request):
                 "sessions": [_short_session_label(v) for v in session_values],
                 "total": reg["attendee_count"],
                 "children": answers.get(str(children_q["id"]), "") == "Yes" if children_q else False,
-                "meal": answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False,
+                # CA: meals are provided for every visitor on Sabbath, so everyone
+                # counts as joining the meal (the question is hidden there).
+                "meal": True if event.slug.endswith("-ca") else (
+                    answers.get(str(meal_q["id"]), "") == "Yes" if meal_q else False
+                ),
                 "children_detail": (
                     [
                         {"name": row.get(str(name_sub["id"]), "") if name_sub else "", "age": row.get(str(age_sub["id"]), "")}

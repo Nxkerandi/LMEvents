@@ -101,6 +101,13 @@
       </div>
       {% endif %}
 
+      {% if event.meal_notice %}
+      <div class="notice-bar">
+        <img src="{% static 'images/figma/icon-meal.svg' %}" alt="">
+        <p>{{ event.meal_notice }}</p>
+      </div>
+      {% endif %}
+
       {% if event.registration_deadline %}
       <div class="notice-bar">
         <img src="{% static 'images/figma/icon-notice.svg' %}" alt="">

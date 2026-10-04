@@ -22,6 +22,10 @@ class Event(models.Model):
         max_length=200, blank=True,
         help_text="Optional phrase appended to the notice body in gold, e.g. \"September 30.\" — for emphasizing a deadline.",
     )
+    meal_notice = models.CharField(
+        max_length=200, blank=True,
+        help_text="Optional notice shown on the registration page under the schedule, e.g. about meals. Blank shows nothing.",
+    )
     location = models.CharField(max_length=200, blank=True)
     contact_email = models.EmailField(blank=True)
     quote_text = models.TextField(
