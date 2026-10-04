@@ -131,6 +131,11 @@ class EventQuestion(models.Model):
         help_text="Button text for payment_link_url, e.g. \"Pay for Meals\".",
     )
     required = models.BooleanField(default=False)
+    hidden = models.BooleanField(
+        default=False,
+        help_text="Hide this question from the public form and dashboard without deleting it. "
+                   "Existing answers are kept in the database.",
+    )
     depends_on = models.ForeignKey(
         "self", related_name="dependents", null=True, blank=True, on_delete=models.SET_NULL,
         help_text="Only show this question if depends_on's answer equals depends_on_value.",

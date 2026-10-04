@@ -102,7 +102,7 @@ def _short_session_label(full_label):
 def _top_questions(event):
     return (
         event.questions
-        .filter(parent_question__isnull=True)
+        .filter(parent_question__isnull=True, hidden=False)
         .prefetch_related("options", "sub_questions__options")
     )
 
