@@ -241,6 +241,13 @@ def initial_page_view(request):
 def registration_view(request, slug):
     event = get_object_or_404(Event, slug=slug, is_published=True)
 
+    if event.registration_closed:
+        return render(request, "events/register.html", {
+            "event": event,
+            "closed": True,
+            "closed_message": event.registration_closed_message or "Registration is closed.",
+        })
+
     if request.method == "POST":
         ip_address = _client_ip(request)
         if _is_rate_limited(ip_address):

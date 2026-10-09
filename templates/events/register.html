@@ -18,7 +18,13 @@
 {% endif %}
 
 <main id="main">
-  {% if success %}
+  {% if closed %}
+  <div class="lm-card">
+    <p class="card-title card-title--navy">REGISTRATION CLOSED</p>
+    <p class="card-body">{{ closed_message }}</p>
+    {% if event.contact_email %}<p class="card-body">Questions? Contact us at <a href="mailto:{{ event.contact_email }}">{{ event.contact_email }}</a>.</p>{% endif %}
+  </div>
+  {% elif success %}
   <div class="lm-card success">
     <div class="mark-circle"></div>
     <h2>You're registered</h2>

@@ -26,6 +26,17 @@ class Event(models.Model):
         max_length=200, blank=True,
         help_text="Optional notice shown on the registration page under the schedule, e.g. about meals. Blank shows nothing.",
     )
+    registration_closed = models.BooleanField(
+        default=False,
+        help_text="When on, the public registration page shows a closed message instead of the form "
+                   "(e.g. the event has reached capacity). The page stays visible and existing "
+                   "registrations/dashboard are unaffected — this only blocks new signups.",
+    )
+    registration_closed_message = models.CharField(
+        max_length=300, blank=True,
+        help_text='Shown on the registration page while registration_closed is on. Falls back to '
+                   '"Registration is closed." if blank.',
+    )
     location = models.CharField(max_length=200, blank=True)
     contact_email = models.EmailField(blank=True)
     quote_text = models.TextField(
